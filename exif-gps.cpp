@@ -621,13 +621,11 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSTimeStamp"), Value.get());
 
 	// And we should also do a datestamp.
-	Value = Exiv2::Value::create(Exiv2::unsignedRational);
-	snprintf(ScratchBuf, sizeof(ScratchBuf), "%d/1 %d/1 %d/1",
+	snprintf(ScratchBuf, sizeof(ScratchBuf), "%04d:%02d:%02d",
 			TimeStamp.tm_year + 1900,
 			TimeStamp.tm_mon + 1,
 			TimeStamp.tm_mday);
-	Value->read(ScratchBuf);
-	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSDateStamp"), Value.get());
+	ExifToWrite["Exif.GPSInfo.GPSDateStamp"] = ScratchBuf;
 
 	// Write the data to file.
 	Image->writeMetadata();
