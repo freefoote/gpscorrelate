@@ -127,13 +127,11 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 	char* Copy = strdup(Value.c_str());
 	
 	// Check if we have GPS tags.
-	Exiv2::Exifdatum& GPSData = ExifRead["Exif.GPSInfo.GPSVersionID"];
+	Exiv2::Exifdatum& GPSData = ExifRead["Exif.GPSInfo.GPSLatitude"];
 
-	Value = GPSData.toString();
-
-	if (Value.length() == 0)
+	if (GPSData.count() < 3)
 	{
-		// No GPS data.
+		// No valid GPS data.
 		*IncludesGPS = 0;
 	} else {
 		// Seems to include GPS data...
