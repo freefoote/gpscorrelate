@@ -1,0 +1,35 @@
+<html><head><title>GPS Correlate Documentation</title></head>
+
+<body>
+
+<h1 align="center">GPS Correlate Documentation</h1>
+
+<p align="center">Written by Daniel Foote.</p>
+
+<h2>Contents</h2>
+
+<ul>
+<li><a href="concepts.html">GPS Photo Correlation Concepts</a></li>
+<li><a href="command.html">Usage of the command line client</a></li>
+<li><a href="gui.html">Usage of the GUI version</a></li>
+</ul>
+
+<h2>Important Note for users before 1.5.2</h2>
+
+<p>Prior to version 1.5.2, there was a bug in gpscorrelate that caused gpscorrelate to incorrectly parse dates. The result is that the internal date format was one month out (ie, December was considered as the following January, and January was considered as Feburary).</p>
+
+<p>This did not affect the matching of photos, as the GPX data and the EXIF data were passed through the same buggy conversion.</p>
+
+<p>When writing out GPS data, gpscorrelate wrote a GPSTimeStamp and a GPSDateStamp tag, which had the UTC GPS Time and Date of the match. The DateStamp and TimeStamp tags were written incorrectly (from two distinctly seperate bugs), and was around one month ahead of the real time. The original date and time of the photo were not modified.</p>
+
+<p>Version 1.5.2 introduces a new command line option, --fix-datestamps. Running gpscorrelate with this option and then a series of JPEG files that were tagged will detect and correct the problem. This will modify the GPSDateStamp and GPSTimeStamp tag to be correct, but only if this is required. You can run gpscorrelate with the -n (no write) option just to see which files are affected without making any changes. When correcting files, --no-mtime (don't change the mtime of the file) is implied.</p>
+
+<p>When using --fix-datestamps, you will also need to use --timeadd to specify the difference between the photo time and UTC.</p>
+
+<h2>More information</h2>
+
+<p>For more information, later versions, or comments/questions, please visit <a href="http://freefoote.dview.net">http://freefoote.dview.net</a>.</p>
+
+</body>
+</html>
+

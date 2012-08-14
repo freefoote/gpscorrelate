@@ -1,0 +1,62 @@
+<html><head><title>GPS Correlate Documentation: GUI version</title></head>
+
+<body>
+
+<h1 align="center">GPS Correlate Documentation: GUI version</h1>
+
+<hr />
+
+<h2>The Correlation Window</h2>
+
+<img src="corr.png" alt="The Correlation Window, 89,363 bytes" width="880" height="530">
+
+<h2>How to use the Correlation Window</h2>
+
+<h3>Step 1: Add Photos</h3>
+
+<p>Clicking the "Add Photos..." button will allow you to select photos to add to the list. You can select multiple photos in one go from the open dialog that appears. Once you have chosen the photos that you want, click "Open" to select the photos. They will be scanned for EXIF tags and added to the list. If they already have GPS EXIF tags, the data from those tags will be shown in the window. Otherwise, you will just see the timestamp from the photo, and the status of the photo.</p>
+
+<p>Selecting a photo or multiple photos from the list on the right and clicking "Remove Photos" will remove these from the list.</p>
+
+<h3>Step 2: GPS Data</h3>
+
+<p>Clicking the "Choose..." button will bring up a dialog asking the GPX file to read GPS data from. Once you have selected the file, it will be loaded into memory. While the loading is proceeding, you will see a dialog asking you to wait while the data is loaded. Once loaded, the name of the file that the data is coming from will be shown above the button.</p>
+
+<h3>Step 3: Set options</h3>
+
+<p>The <b>"Interpolate"</b> checkbox defines whether or not to interpolate between GPS points. By default, this is checked. Clearing this box makes the algorithm round points.</p>
+
+<p>The <b>"Don't write"</b> checkbox, if checked, will prevent the GPS EXIF tags being written back to the photo. However, the point that is matched will be shown in the list, which allows you to correlate and check the results first.</p>
+
+<p>The <b>"Don't change mtime"</b> checkbox, if checked, will prevent changes to the JPEG files from updating the files mtime.</p>
+
+<p>The <b>"Between Segments"</b> checkbox, if checked, will ignore track segments, and match photos between track segments. Usually a track segment differentiates between multiple GPS data logging sessions, so interpolating between track segments could well be interpolating when there was no GPS data.</p>
+
+<p>The <b>"Write DD MM SS.SS"</b> checkbox, if un-checked, will force the pre 1.5.3 behaviour of writing Longitude and Lattitude as DD MM.MM values. The default is now to write values in DD MM SS.SS.</p>
+
+<p>The <b>"Max gap time"</b> box specifies the maximum distance from a point that a photo will be matched. In seconds.</p>
+
+<p>The <b>"Time Zone"</b> box specifies the time zone that the photos were taken in, so that the times of the photos can be adjusted to match the GPS data.</p>
+
+<p>The <b>"Photo Offset"</b> box specifies the number of seconds to add to the photos time to match the GPS data. See the <a href="concepts.html">GPS Correlate Concepts</a> documentation to understand this value.</p>
+
+<p>The <b>"GPS Datum"</b> box specifies the Datum of the source GPS data, which is written into the GPS EXIF tags. By default this is "WGS-84", but really should not be changed, as the GPX format is only supposed to store WGS-84 data. However, you can change this if you wish.</p>
+
+<h3>Step 4: Correlate!</h3>
+
+<p>The "Correlate Photos" button will start the correlation proceedure on the selected photos with the loaded GPS data. If no photos are selected or no GPS data is loaded, then an error will be generated. Otherwise, the photos will be correlated and you will see their status change in the list as the process goes on. As photos are matched, their locations are also shown in the photo list.</p>
+
+<h3>Other Tools</h3>
+
+<p>The <b>"Strip GPS tags"</b> button will remove GPS tags from the selected photos.</p>
+
+<h3>Saving Settings</h3>
+
+<p>As of 1.5.4, when you exit the GUI program, it will save your settings to ~/.gpscorrelaterc. These will be reloaded next time you start gpscorrelate. The command line version does not make use of this file.</p>
+
+<hr />
+
+<a href="index.html">Return to the contents</a>
+
+</body></html>
+

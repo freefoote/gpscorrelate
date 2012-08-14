@@ -1,0 +1,114 @@
+Release History:
+
+v1.0: 24 Feb 2005
+	Initial release.
+
+v1.1: 1 Mar 2005
+	Instead of ignoring track segments, we record them now,
+	and by default don't interpolate between them. This can
+	be disabled, ie, match between track segments.
+
+v1.2: (Not released until 1.3)
+	Added --machine/-o option. This outputs the tags from
+	the passed files in a machine-readable CSV output.
+
+v1.3: 25 April 2006
+	It would appear that the Exiv2 API changed somewhat.
+	And gpscorrelate didn't work. Reported to me by a friendly chap.
+	Now fixed to work correctly with the latest Exiv2 v0.9.1.
+
+v1.4: 28 May 2006
+	Added option to preserve mtime on input photos. Patch submitted
+	by Russell Steicke. (http://adelie.cx/).
+	Also added patch to make GPX read correctly in non-C locales - 
+	would interpret "." as thousands seperator in some locales.
+
+v1.5: 24 Feb 2007
+	Fixed very silly bug where it would segfault on certain GPX files.
+	Turns out those GPX files don't have time data on the trackpoints,
+	and this is due to that track coming from certain parts of the GPS
+	memory (where the timestamps get stripped to save space on the GPS
+	device itself). This is something gpscorrelate should have handled.
+
+v1.5.1: 3rd April 2007
+	Included patch from Marc Horowitz (an MIT one) to correctly remove
+	all GPS tags when using the "remove GPS tags" feature. It seems my
+	original code missed two. The patch instead iterates over the tags
+	and removes anything starting with "Exif.GPSInfo". Thanks!
+
+v1.5.2: 6 June 2007
+	- Fixed bug where program would die with uncaught exception if input
+	  files were not JPEGs at all. Now the exception is caught.
+	- Fixed very silly bug where timestamps were incorrectly calculated:
+	  in struct tm, I didn't realise that tm_mon was 0-based, and didn't
+	  decrement it. This caused failures on dates spanning months with
+	  different numbers of days. Because the timestamps inside EXIF data
+	  and the timestamps from GPX data were converted the same way, the
+	  matching still worked. The date part is written as GPSDateStamp,
+	  which is wrong, and thus a --fix-datestamp option is provided.
+	- Turns out GPS Timestamp wasn't correct either. This time was out
+	  by the local timezone. This did not affect matches. --fix-timestamps
+	  will fix this as well.
+	- Added a --version option.
+
+v1.5.3: 20 June 2007
+	- GPS coordinates, including altitude, are not written as Rational
+	  values instead of Signed Rational values, this now meets the EXIF
+	  specifications.
+	- Default format for writing coordinates is now DD MM SS.SS. The old
+	  behaviour can be forced with the --degmins parameter.
+	- If altitude is negative, the correct sea level reference value is
+	  now written.
+
+v1.5.4: 22 June 2007
+	- Added Photo Offset time, as a fine adjustment between photo time and
+	  GPS time. Read the docs to understand it.
+	- GUI now has extra settings, and a "Strip GPS tags" button.
+	- GUI Now remembers settings on exit, into ~/.gpscorrelaterc. These are
+	  reloaded next time the GUI is started.
+
+v1.5.5: 20 August 2007
+        - Made altitude data in GPX files optional. This should have been the case
+	  since the beginning, but it seems it was not.
+
+v1.5.6: 1 October 2007
+	- Incorporated patch from Marc Horowitz that allows gpscorrelate to correctly
+	  calculate negative timezone adjustments. Previously, the minutes were not
+	  subtracted from the timezone adjustment.
+
+v1.5.7: 21 September 2008
+	- Fixed a bug where altitude data was not read correctly if the value was
+	  negative - instead it would read positive. It was always written correctly,
+	  though. Thanks to Andrzej Novak for pointing this one out.
+	- Added an 'install' target to the makefile provided by Till Maas. Thanks!
+	- Update the GUI to remember the last directory for Photos and GPX data when
+	  using the file chooser dialog. This also persists across program invocations.
+	  This was suggested by Till Maas.
+	- Added Makefile.mingw32 contributed by Julio Castillo, which allows cross
+	  compliation on Win32. This also included some cross-platform patches for the
+	  code, which is greatly appreciated.
+
+v1.5.8: 1 November 2008
+	The 'Till Maas' release.
+	- Added gpscorrelate.desktop contributed by Till.
+	- Added patches for the Makefile by Till, to improve the installation.
+	- Added manpage, originally from Debian, but converted to XML by Till.
+	- Added patches for the Makefile by Till, to configure and install the manpages.
+	- Added patches by Till to remove compilation warnings.
+	- Thanks for your work!
+
+v1.5.9: 4 April 2009
+	Incorporated patches from the new Debian maintainer:
+	- Fixes crash on empty tags
+	- Fixes writing of negative altitudes.
+	- Fixes display of negative altitudes.
+	- Fixes invalid use of Exiv2 toRational().
+	Thanks Eugeniy for organising all these fixes; you did all the work - I just
+	applied the patches you supplied.
+
+v1.6.0: 5 April 2009
+	Added another patch that I forgot to include in 1.5.9. Thanks again Eugeniy.
+
+v1.6.1: 13 February 2010
+	- Added desktop icon created by Till Maas.
+	- Added a patch to fix future build issues on Fedora.

@@ -1,0 +1,140 @@
+<html><head><title>GPS Correlate Documentation: Command line version</title></head>
+
+<body>
+
+<h1 align="center">GPS Correlate Documentation: Command line version</h1>
+
+<hr />
+
+<h2>Command line options</h2>
+
+<p>Basic usage:</p>
+
+<p><pre>
+gpscorrelate [OPTIONS] -g gpsdata.gpx photo1.jpg photo2.jpg ...
+</pre></p>
+
+<p>The options are:</p>
+
+<table border="0" width="100%">
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--gps or -g gps_data.gpx</b>
+</td><td>
+Specify the file to read the GPS data from
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--timeadd or -z +/-XX:[XX]</b>
+</td><td>
+Specifies the timezone of the photos. For example, in Perth, Western Australia, this is +8:00. This can be specified as either "8", "+8", "8:00", or "+8:00".
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--no-interpolation or -i</b>
+</td><td>
+Disable interpolation between the points. Instead of interpolating, the program will "round" to the nearest point. If the photo is exactly half way between the two points, it will round down to the earliest point.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--verbose or -v</b>
+</td><td>
+Show the final fixes on the screen.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--no-write or -n</b>
+</td><td>
+Don't write the GPS EXIF tags back to the file. Useful with -v, to do a trial run.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--datum or -d "datum"</b>
+</td><td>
+Specifies the "datum" to write into the GPS EXIF tags. By default, it is WGS-84. However, GPX is not supposed to store anything but WGS-84, so use if you must.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--max-dist or -m time</b>
+</td><td>
+Specifies the maximum distance around a point that a photo will be matched. In seconds.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--show or -s</b>
+</td><td>
+Just show the GPS data embedded into the EXIF tags of the photos specified on the command line, and then quit.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--machine or -o</b>
+</td><td>
+Just show the GPS data embedded into the EXIF tags of the photos specified on the command line, and then quit. This option varies from --show in that it will output a machine readable format: CSV. In this case the fields are:<br />
+"filename.jpg","2005:04:23 19:31:00",Latitude,Longitude,Elevation<br />
+Where the first value is the filename, as passed, the second is the timestamp, and the last three are floating point values, with a leading plus or minus.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--remove or -r</b>
+</td><td>
+Remove GPS EXIF tags from the specified files, and then quit. Note that this only removes the GPS tags that the program could add, it does not delete all possible GPS EXIF tags. All other tags are left alone.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--ignore-tracksegs or -t</b>
+</td><td>
+Ignores tracksegments in the original GPX file and interpolates between them. Generally track segments show multiple sessions of GPS logging: between them is generally when the GPS was not logging.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--fix-datestamps or -f</b>
+</td><td>
+Prior to 1.5.2 was two bugs that wrote the wrong value for the GPSDateStamp and GPSTimeStamp tag. This option will check each supplied filename for the problem and correct it. Use with --no-write to prevent writing these changes (useful for checking for the issue). This option also implies --no-mtime. You will also need to use --timeadd to specify the difference between localtime and UTC time for the supplied photos.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--degmins or -p</b>
+</td><td>
+Prior to 1.5.3, Longitude and Lattitude values were written as DD MM.MM. After 1.5.3, the default is to write them as DD MM SS.SS, which is more accurate. To force the old behaviour, use this flag.
+</td></tr>
+
+<tr>
+<td valign="top" nowrap="nowrap">
+<b>--photooffset or -O seconds</b>
+</td><td>
+This parameter specifies the Photo offset, that is a number of seconds added to the photo timestamp. It is calculated with GPS - Photo time. See the <a href="concepts.html">GPS Correlate concepts</a> for more details on exactly how to use this.
+</td></tr>
+
+</table>
+
+<p>Examples of usage:</p>
+
+<p>In a directory full of photos:</p>
+
+<pre>gpscorrelate -g Test.gpx -z +8 *.jpg</pre>
+
+<p>Removing or showing GPS tags:</p>
+
+<pre>gpscorrelate --show *.jpg
+gpscorrelate --remove *.jpg</pre>
+
+<p>And thats about it... there is not too much more to say about this program that is not already said in the <a href="concepts.html">GPS Correlate concepts</a> documentation.</p>
+
+<hr />
+
+<a href="index.html">Return to the contents</a>
+
+</body>
+</html>

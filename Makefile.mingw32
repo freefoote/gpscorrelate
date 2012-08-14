@@ -1,0 +1,29 @@
+# Makefile for gpscorrelate
+# Written by Daniel Foote.
+
+CC       = i486-mingw32-gcc
+CXX      = i486-mingw32-g++
+COBJS    = main-command.o unixtime.o gpx-read.o correlate.o exif-gps.o
+GOBJS    = main-gui.o gui.o unixtime.o gpx-read.o correlate.o exif-gps.o
+CFLAGS   = -mms-bitfields -Wall $(shell pkg-config --cflags libxml-2.0 gtk+-2.0 exiv2)
+OFLAGS   = -Wall $(shell pkg-config --libs exiv2 libxml-2.0 gtk+-2.0) -lm -liconv -lexpat
+
+
+all:	gpscorrelate.exe gpscorrelate-gui.exe
+
+gpscorrelate.exe: $(COBJS)
+	$(CXX) -o $@ $(COBJS) $(OFLAGS) 
+
+gpscorrelate-gui.exe: $(GOBJS)
+	$(CXX) -o $@ $(GOBJS)  $(OFLAGS) 
+
+.c.o:
+	$(CC) $(CFLAGS) -c -o $*.o $<
+
+.cpp.o:
+	$(CXX) $(CFLAGS) -c -o $*.o $<
+
+clean:
+	rm -f *.o gpscorrelate{,.exe} gpscorrelate-gui{,.exe}
+
+

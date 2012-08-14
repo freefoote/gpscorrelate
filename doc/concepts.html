@@ -1,0 +1,113 @@
+<html><head><title>GPS Correlate Documentation: Concepts</title></head>
+
+<body>
+
+<h1 align="center">GPS Correlate Documentation: Concepts</h1>
+
+<hr />
+
+<h2>Step 1: Taking photos and recording GPS data.</h2>
+
+<p>Before you can correlate any photos with GPS data, you first have to have some photos and some GPS data. This generally involves walking/driving/going somewhere, taking photos, and taking a GPS (or GPS like device) with you.</p>
+
+<p>Most cheap GPS devices have a "tracklog" facility that record where you have been. The resolution of these tracks is widely variable - my <a href="http://www.garmin.com/products/etrex/">Garmin eTrex</a> GPS records up to 1600 data points, at around 20 metres between each point. This works out to travelling about 500 kilometres (by car) or 50 kilometres (on foot) before you run out of memory. (These numbers vary very much depending on many factors.)</p>
+
+<p>Other GPS devices will vary in their capacity. If you are using a GPS device made only for a computer, or have attached your GPS device to a computer, you may wish to log the data on the computer. In this case, you will probably end up logging the one second fixes, which results in a fair bit of data (nothing excessive), but very accurate results.</p>
+
+<p>As to taking the photos? Not too many digital cameras add GPS data to the photos themselves - although they do exist. If you have one, then you don't need this program!</p>
+
+<p>Besides that, take photos as you normally would. The correlation program matches photos to GPS data by their timestamp, so it would be a good idea to synchronise the cameras time to the time from the GPS before you start taking photos. (Not the other way around: the GPS gets its time from the satelites, which means that it is probably correct... and most GPSs will not allow you to set their time, anyway).</p>
+
+<p>The photos will have to be tagged with "EXIF tags", which describe metadata about the photo, including the date and time. These tags are embedded in the photos themselves. That is pretty much standard for digital cameras nowadays, however, some very very very old digital cameras (like the ancient floppy-disk Sony Mavica that a family member owns) don't store EXIF tags. These will not work with this program. There are probably ways around this, though - but they are outside what I am talking about here. (Give me half a second, and I'd start talking about writing a script to grab... no, better stop there...)</p>
+
+<p>When you are finished the photo shoot, download the photos as normal and get ready. Mind that any permanent rotations or editing do not remove the EXIF tags.</p>
+
+<h3>What you need to know:</h3>
+
+<ul>
+<li><b>Syncronise your cameras time from the GPS time.</b> Don't ask, just do it. And do it just before your photo shoot.</li>
+<li><b>Use a GPS that has a tracklog capability.</b> Most do - although the quality/resolution varies.</li>
+<li><b>Take your GPS with you, and keep it close to the camera.</b> GPS is accurate down to several meters, so use your discretion.</li>
+</ul>
+
+<hr />
+
+<h2>Step 2: Getting the GPS data ready.</h2>
+
+<p>The GPS correlate program accepts GPS data in the GPX format: an open XML format. The format is quite arbitrary, and, naturally, everyone has their own GPS file format. So, in that way, this program is no exception.</p>
+
+<p>Exactly how you will get the GPS data from a discrete device is very much device dependant. Many devices have serial cables or USB cables to download the data (although the USB cables are often glorified USB-to-serial convertors). What format it will turn out as is also the big question. I personally recommend GPSBabel, which can convert between many formats (thus translating from whatever strange one your downloading method/program produces) and can also download from Garmin and Magellen GPS devices directly (so you can download straight to GPX and retain lots of useful metadata, like track segments).</p>
+
+<p>If you logged the GPS data with a computer... well, it could be any format, depending on how it is logged. One trick would be to log the NMEA sentences as they came from the GPS directly into a file. Once the logging is done, GPSBabel can convert these NMEA sentences directly into GPX format. Usually these are one second fixes, so this would yeild very good results - however, lugging around a laptop to log the data might not be convenient. A PDA might be convenient, though...</p>
+
+<p>The other thing to know about GPX is that is stores data quite cleverly, seperating tracks into "track segments". This can be explained quite simply with an example. When I drive through a tunnel with my GPS, it has no reception in the tunnel. My GPS records this lack of signal on the map by not showing a track between the points where I was in the tunnel. GPSBabel correctly reads this and enters this in the GPX file by seperating the segments with "track segments". Prior to version 1.1, this program ignored track segments and just hauled out points and considered them to be a single track. So if a photo was taken in between the time where there was no GPS data, you would not get a correct answer (depending on the situation). Now, the program will not match a photo between track segments. You can, however, disable this functionality, and still match between track segments.</p>
+
+<h3>What you need to know:</h3>
+
+<ul>
+<li><b>The result of downloading the GPS data could be any format.</b> Convert it with GPSBabel to GPX format, or better yet use GPSBabel to download the data in the first place.</li>
+<li><b>Absolute best results would be logging NMEA sentences to file, and then GPX'ing it with GPSBabel.</b> This will give you lots of one second fixes. Very accurate.</li>
+<li><b>The GPX format is good for archiving tracks.</b> Due to its XML nature, it should be readable for a while to come yet.</li>
+<li><b>The GPX file is split up into "track segments".</b> Generally these define when you were or were not logging GPS data. This program does not interpolate between track segments, by default.</li>
+</ul>
+
+<hr />
+
+<h2>Step 3: Getting ready to correlate.</h2>
+
+<p>To correlate, you need photos and GPS data. I assume the last two steps would have resulted you with a series of JPEG files with EXIF tags, and a GPX file with a "tracklog" of where you have been when you took the photos.</p>
+
+<p>The last thing you need to know is the timezone that the camera is set to. GPS data is always in UTC, so when we correlate the photos, we need to know how much to add or subtract to the photos time to make the photos time UTC. Just "know" this value, there are places to add this in in the programs.</p>
+
+<p>(This also assumes that the camera is set for local time where you are taking the photos. It is really arbitrary, so long as you know the difference between your cameras time and UTC. If you really wanted, just set the camera to UTC and be done with it... although thats not so friendly when you try to use the EXIF data for other things. Up to you.)</p>
+
+<p>As an example, here in Perth, Western Australia, the timezone is +8:00. So that is the value that I use when correlating the photos.</p>
+
+<p>Since 1.5.4, there is an option to add an offset to the photo time to make it match up with GPS data. An example case is where you take a photo of your GPS showing the current time. You can use this to calculate the difference between the GPSs time and the photos time.</p>
+
+<p>Example calculations:
+<pre>GPS Time in Photo:  10:10:10
+Timestamp on Photo: 10:09:30
+GPS - Photo:             +40
+
+GPS Time in Photo:  10:10:10
+Timestamp on Photo: 10:11:30
+GPS - Photo:             -80</pre></p>
+
+<p>The value determined in the above examples becomes the "Photo offset" time, in seconds, which is added to the photos timestamp before the correlation is performed.</p>
+
+<h3>What you need to know:</h3>
+
+<ul>
+<li><b>The timezone the camera was set to when taking photos.</b> In hours and minutes, for example: +8:00.</li>
+<li><b>As of 1.5.4, you can fine tune the offset between the GPS time and the Photos time.</b> Use the photo offset function to set this.</li>
+</ul>
+
+<hr />
+
+<h2>Step 4: Correlation.</h2>
+
+<p>Time to correlate! Exactly how this is performed depends on whether or not you use the <a href="gui.html">GUI version</a> (prettier) or the <a href="command.html">command line version</a> (scriptable).</p>
+
+<p>Now there are a few options to consider when deciding how to allow the program to determine exactly the location at which the photo was taken. The program works down to the second. If you have one second GPS fixes available, then the photos will be matched exactly with a point having exactly the same timestamp. As this is the accuracy of the camera, and the accuracy of the GPS - you can not get more accurate than this with the given equipment.</p>
+
+<p>When there is less than one second data available, there are a few options available to make the results more accurate. By default, if the program finds photos between points, it will linearly interpolate between the points to determine the correct location of the photo.</p>
+
+<p>You may not wish to allow the interpolation, for whatever reason. If you disable interpolation, then the program will instead "round" to the nearest point. That means that the photo will be set to have the location that is the recorded closest fix in time. (Rounding down if you manage to exactly center it.)</p>
+
+<p>The final major setting has many names, of which I can not decide the best one for. Sometimes I call this "feather time", and other times I call this "max distance". In any event, this setting, specified in seconds, defines the furthest time from any recorded GPS point that a photo will be matched. For example, if two GPS data points are 15 minutes apart, and you took a photo in the middle, you may not wish to match this, as the camera might well have been somewhere else. In this case, set the "feather time" to the maximum time from a recorded point that you want a photo matched. In the above example, you might set it to 60 seconds, if you know how often your GPS is likely to take another data point.</p>
+
+<h3>What you need to know:</h3>
+
+<ul>
+<li><b>You can use the <a href="gui.html">GUI version</a> if that suits you better.</b></li>
+<li><b>Or there is always the dependable <a href="command.html">command line</a> version.</b></li>
+<li><b>By default, the program linearly interpolates.</b> If disabled, it rounds to the nearest point.</li>
+<li><b>"Feather time" or "max distance", in seconds</b> is the maximum time from a data point that a photo will be matched.</li>
+</ul>
+
+<hr />
+
+<a href="index.html">Return to the contents</a>
+
+</body></html>

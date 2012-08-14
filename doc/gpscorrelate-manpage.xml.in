@@ -1,0 +1,399 @@
+<?xml version='1.0' encoding='ISO-8859-1'?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+"http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd" [
+
+  <!ENTITY dhfirstname "<firstname>Stefano</firstname>">
+  <!ENTITY dhsurname   "<surname>Zacchiroli</surname>">
+  <!ENTITY dhdate      "<date>30 Oct 2008</date>">
+  <!ENTITY dhsection   "<manvolnum>1</manvolnum>">
+  <!ENTITY dhemail     "<email>zack@debian.org</email>">
+  <!ENTITY dhusername  "Stefano Zacchiroli">
+  <!ENTITY dhucpackage "<refentrytitle>GPSCORRELATE</refentrytitle>">
+  <!ENTITY dhpackage   "gpscorrelate">
+
+  <!ENTITY debian      "<productname>Debian</productname>">
+  <!ENTITY gnu         "<acronym>GNU</acronym>">
+  <!ENTITY gpl         "&gnu; <acronym>GPL</acronym>">
+]>
+
+<refentry>
+  <refentryinfo>
+    <address>
+      &dhemail;
+    </address>
+    <author>
+      &dhfirstname;
+      &dhsurname;, Till Maas
+    </author>
+    <copyright>
+      <year>2006, 2008</year>
+      <holder>&dhusername; &dhemail;, Till Maas</holder>
+    </copyright>
+    &dhdate;
+  </refentryinfo>
+  <refmeta>
+    &dhucpackage;
+
+    &dhsection;
+  </refmeta>
+  <refnamediv>
+    <refname>&dhpackage;</refname>
+    <refpurpose>correlates digital images with GPS data filling EXIF fields</refpurpose>
+  </refnamediv>
+  <refsynopsisdiv>
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group>
+        <arg choice="plain">-z</arg>
+        <arg choice="plain">
+          --timeadd +/-<replaceable>HH</replaceable>[:<replaceable>MM</replaceable>]
+        </arg>
+      </group>
+      
+      <group>
+        <arg choice="plain">-O</arg>
+        <arg choice="plain">
+          --photooffset <replaceable>seconds</replaceable>
+        </arg>
+      </group>
+      
+      <group>
+        <arg choice="plain">-i</arg>
+        <arg choice="plain">--no-interpolation</arg>
+      </group>
+
+      <group>
+        <arg choice="plain">-v</arg>
+        <arg choice="plain">--verbose</arg>
+      </group>
+
+      <group>
+        <arg choice="plain">-d</arg>
+        <arg choice="plain">--datum <replaceable>datum</replaceable>
+        </arg>
+      </group>
+      
+      <group>
+        <arg choice="plain">-n</arg>
+        <arg choice="plain">--no-write</arg>
+      </group>
+
+      <group>
+        <arg choice="plain">-m</arg>
+        <arg choice="plain">--max-dist <replaceable>time</replaceable>
+        </arg>
+      </group>
+
+      <group>
+        <arg choice="plain">-t</arg>
+        <arg choice="plain">--ignore-tracksegs</arg>
+      </group>
+
+      <group>
+        <arg choice="plain">-M</arg>
+        <arg choice="plain">--no-mtime</arg>
+      </group>
+      
+      <group>
+        <arg choice="plain">-f</arg>
+        <arg choice="plain">--fix-timestamps</arg>
+      </group>
+      
+      <group>
+        <arg choice="plain">-p</arg>
+        <arg choice="plain">--degmins</arg>
+      </group>
+
+      
+      <arg choice="plain">
+        -g <replaceable>file.gpx</replaceable>
+      </arg>
+      <arg rep="repeat" choice="plain">
+        <replaceable>image.jpg</replaceable>
+      </arg>
+    </cmdsynopsis>
+
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="plain">
+        <arg choice="plain">-s</arg>
+        <arg choice="plain">--show</arg>
+        <arg choice="plain">-o</arg>
+        <arg choice="plain">--machine</arg>
+      </group>
+      <arg rep="repeat" choice="plain"><replaceable>image.jpg</replaceable></arg>
+    </cmdsynopsis>
+
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group> 
+        <arg choice="plain">-M</arg>
+        <arg choice="plain">--no-mtime</arg>
+      </group>
+
+      <group choice="req">
+        <arg choice="plain">-r</arg>
+        <arg choice="plain">--remove</arg>
+      </group>
+      <arg rep="repeat" choice="plain"><replaceable>image.jpg</replaceable></arg>
+    </cmdsynopsis>
+    
+    <cmdsynopsis>
+      <command>&dhpackage;</command>
+      <group choice="plain">
+        <arg choice="plain">-V</arg>
+        <arg choice="plain">--version</arg>
+        <arg choice="plain">-h</arg>
+        <arg choice="plain">--help</arg>
+      </group>
+    </cmdsynopsis>
+
+    <cmdsynopsis>
+      <command>&dhpackage;-gui</command>
+    </cmdsynopsis>
+  </refsynopsisdiv>
+  <refsect1>
+    <title>DESCRIPTION</title>
+
+    <para>This manual page documents briefly the <command>&dhpackage;</command>
+      and <command>&dhpackage;-gui</command> commands.</para>
+
+    <para>There is an extended documenation available in HTML format; see below.</para>
+
+    <para><command>&dhpackage;</command> is a program that acts on digital images
+      in JPEG format filling EXIF (Exchangeable Image File Format) fields
+      related to GPS (Global Positioning System) information.  Source for the
+      GPS data is a record of GPS information encoded in GPX (GPS Exchange
+      Format) Format. The act of filling those fields is referred to as
+      <emphasis>correlation</emphasis>.</para>
+
+    <para> If GPS data are available at the precise moment the image was taken
+      (with a 1-second granularity) the GPS data are stored unmodified in EXIF
+      fields. If they are not linear interpolation of GPS data available at
+      moments before and after the image was taken can be used. </para>
+
+    <para><command>&dhpackage;</command> is a command line tool implementing
+      correlation whereas <command>&dhpackage;-gui</command> is the
+      corresponding GTK+ graphical user interface. </para>
+
+  </refsect1>
+  <refsect1>
+    <title>OPTIONS</title>
+
+    <para>These programs follow the usual &gnu; command line syntax, with long
+      options starting with two dashes (`-').  A summary of options is included
+      below.  For a complete description, see the HTML documentation. </para>
+
+    <variablelist>
+      <varlistentry>
+        <term>
+          <option>-g</option>,
+          <option>--gps</option>
+          <replaceable>file.gpx</replaceable>
+        </term>
+        <listitem>
+          <para>correlate using the specified GPX file with GPS data</para>
+        </listitem>
+    </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-s</option>,
+          <option>--show</option>
+        </term>
+        <listitem>
+          <para>only show the GPS data of the given images</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-o</option>,
+          <option>--machine</option>
+        </term>
+        <listitem>
+          <para>only show the GPS data of the given images in a machine
+            readable output, if there is any</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-r</option>,
+          <option>--remove</option>
+        </term>
+        <listitem>
+          <para>only remove GPS EXIF data from the given images</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-z</option>,
+          <option>--timeadd</option>
+          <userinput>+/-</userinput><replaceable>XX</replaceable>[<userinput>:</userinput><replaceable>XX</replaceable>]
+        </term>
+        <listitem>
+          <para>time to add to GPS data to make it match the timestamps of the
+            images. GPS data is in UTC; images are not likely to be in UTC.
+            Enter the timezone used when taking the images: eg,
+            <userinput>+8</userinput> for Perth </para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>
+          <option>-O</option>,
+          <option>--photooffset</option>
+          <replaceable>seconds</replaceable>
+        </term>
+        <listitem>
+          <para>time in seconds to add to the photo timestamp to make it match
+            the GPS timestamp.  To determine the amount of seconds needed, just
+            create a picture of your GPS device showing the current time and
+            compare it with the timestamp of your photo file. </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-i</option>,
+          <option>--no-interpolation</option>
+        </term>
+        <listitem>
+          <para>disable interpolation between points.  Interpolation is linear,
+            points are rounded if disabled </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-v</option>,
+          <option>--verbose</option>
+        </term>
+        <listitem>
+          <para>show which GPS data has been selected for each image</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-d</option>,
+          <option>--datum</option> <replaceable>datum</replaceable>
+        </term>
+        <listitem>
+          <para>specify measurement datum. If not set, WGS-84 used</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-n</option>,
+          <option>--no-write</option>
+        </term>
+        <listitem>
+          <para>do not write the exif data. Useful with
+            <userinput>--verbose</userinput></para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-m</option>,
+          <option>--max-dist</option> <replaceable>time</replaceable>
+        </term>
+        <listitem>
+          <para>max time outside points that image will be matched. Time is in
+            seconds </para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-t</option>,
+          <option>--ignore-tracksegs</option>
+        </term>
+        <listitem>
+          <para>Interpolate between track segments, too</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-M</option>,
+          <option>--no-mtime</option>
+        </term>
+        <listitem>
+          <para>Do not change mtime of modified files</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-f</option>,
+          <option>--fix-timestamps</option>
+        </term>
+        <listitem>
+          <para>Fix broken GPS datestamps written with versions &lt; 1.5.2</para>
+        </listitem>
+      </varlistentry>
+      
+      <varlistentry>
+        <term>
+          <option>-p</option>,
+          <option>--degmins</option>
+        </term>
+        <listitem>
+          <para>Write location as DD MM.MM as was default before &lt; 1.5.3</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-h</option>,
+          <option>--help</option>
+        </term>
+        <listitem>
+          <para>Only show summary of options</para>
+        </listitem>
+      </varlistentry>
+
+      <varlistentry>
+        <term>
+          <option>-V</option>,
+          <option>--version</option>
+        </term>
+        <listitem>
+          <para>Only print the version</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+
+  </refsect1>
+  <refsect1>
+    <title>SEE ALSO</title>
+
+    <para>gpsd (1), gpsbabel (1), gpxlogger (1), cgpxlogger (1).</para>
+
+    <para>The documentation of &dhpackage; and &dhpackage;-gui in HTML format
+      are available on the filesystem at <filename
+        class="directory">@DOCDIR@</filename>.
+    </para>
+
+  </refsect1>
+  <refsect1>
+    <title>AUTHOR</title>
+
+    <para>This manual page was initially written by &dhusername; &dhemail; for
+      the &debian; system.  It was extended by Till Maas
+      <email>opensource@till.name</email>. Permission is granted to copy,
+      distribute and/or modify this document under the terms of the &gnu;
+      General Public License, Version 2 any later version published by the Free
+      Software Foundation.  </para>
+
+    <para> On Debian systems, the complete text of the GNU General Public
+      License can be found in /usr/share/common-licenses/GPL.  </para>
+
+  </refsect1>
+</refentry>
+

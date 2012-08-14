@@ -1,0 +1,14 @@
+Installation of GPSCorrelate.
+
+- Make sure you have the appropriate development libraries.
+  You will need: libxml2, libgtk2.0, libexiv2.
+  To create the manpage you need: 
+  - xsltproc from http://xmlsoft.org/XSLT/
+  - manpages/docbook.xsl properly installed from http://docbook.sourceforge.net/projects/xsl/
+    or internet access (xsltproc will download it automatically if it is not installed)
+- Compile the program:
+  make
+- Install the program:
+  make install
+
+... and that should be it.

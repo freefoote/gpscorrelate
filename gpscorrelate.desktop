@@ -1,0 +1,11 @@
+[Desktop Entry] 
+Type=Application
+Version=1.0
+Name=GPSCorrelate
+GenericName=Geotagging tool
+Comment=Add coordinates to jpeg images using gpx files
+TryExec=gpscorrelate-gui
+Exec=gpscorrelate-gui
+Terminal=false
+Categories=Graphics;ImageProcessing;Geography;GTK;
+Icon=gpscorrelate-gui

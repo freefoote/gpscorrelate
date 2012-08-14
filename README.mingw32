@@ -1,0 +1,32 @@
+To compile the windows version you need a mingw32 cross compiler
+toolchain (binutils, gcc, g++, etc). See this page for more pointers
+
+  http://www.ecn.wfu.edu/~cottrell/cross-gtk/
+
+To compile gpscorrelate for win32 you need cross-compiled versions of:
+ libiconv
+ gettext
+ cairo
+ atk
+ libpng
+ libxml2
+ pango
+ pixman
+ zlib
+ expat
+ fontconfig
+ freetype
+ gettext
+ glib2
+ gtk2
+ exiv2
+
+
+Once you have all the dependencies cross-compiled, export
+PKG_CONFIG_PATH to the database of your toolchain environment
+(somehting like /usr/i486-mingw32/lib/pkgconfig/)
+
+Finally run 
+ # make -f Makefile.mingw32
+
+(Makefile.mingw32 and README.mingw32 written and contributed by Julio Castilo. Thanks!)
