@@ -16,7 +16,7 @@
 
 <p>As to taking the photos? Not too many digital cameras add GPS data to the photos themselves - although they do exist. If you have one, then you don't need this program!</p>
 
-<p>Besides that, take photos as you normally would. The correlation program matches photos to GPS data by their timestamp, so it would be a good idea to synchronise the cameras time to the time from the GPS before you start taking photos. (Not the other way around: the GPS gets its time from the satelites, which means that it is probably correct... and most GPSs will not allow you to set their time, anyway).</p>
+<p>Besides that, take photos as you normally would. The correlation program matches photos to GPS data by their timestamp, so it would be a good idea to synchronise the cameras time to the time from the GPS before you start taking photos. (Not the other way around: the GPS gets its time from the satellites, which means that it is probably correct... and most GPSs will not allow you to set their time, anyway).</p>
 
 <p>The photos will have to be tagged with "EXIF tags", which describe metadata about the photo, including the date and time. These tags are embedded in the photos themselves. That is pretty much standard for digital cameras nowadays, however, some very very very old digital cameras (like the ancient floppy-disk Sony Mavica that a family member owns) don't store EXIF tags. These will not work with this program. There are probably ways around this, though - but they are outside what I am talking about here. (Give me half a second, and I'd start talking about writing a script to grab... no, better stop there...)</p>
 
@@ -25,7 +25,7 @@
 <h3>What you need to know:</h3>
 
 <ul>
-<li><b>Syncronise your cameras time from the GPS time.</b> Don't ask, just do it. And do it just before your photo shoot.</li>
+<li><b>Synchronise your cameras time from the GPS time.</b> Don't ask, just do it. And do it just before your photo shoot.</li>
 <li><b>Use a GPS that has a tracklog capability.</b> Most do - although the quality/resolution varies.</li>
 <li><b>Take your GPS with you, and keep it close to the camera.</b> GPS is accurate down to several meters, so use your discretion.</li>
 </ul>
@@ -36,11 +36,11 @@
 
 <p>The GPS correlate program accepts GPS data in the GPX format: an open XML format. The format is quite arbitrary, and, naturally, everyone has their own GPS file format. So, in that way, this program is no exception.</p>
 
-<p>Exactly how you will get the GPS data from a discrete device is very much device dependant. Many devices have serial cables or USB cables to download the data (although the USB cables are often glorified USB-to-serial convertors). What format it will turn out as is also the big question. I personally recommend GPSBabel, which can convert between many formats (thus translating from whatever strange one your downloading method/program produces) and can also download from Garmin and Magellen GPS devices directly (so you can download straight to GPX and retain lots of useful metadata, like track segments).</p>
+<p>Exactly how you will get the GPS data from a discrete device is very much device dependant. Many devices have serial cables or USB cables to download the data (although the USB cables are often glorified USB-to-serial converters). What format it will turn out as is also the big question. I personally recommend GPSBabel, which can convert between many formats (thus translating from whatever strange one your downloading method/program produces) and can also download from Garmin and Magellan GPS devices directly (so you can download straight to GPX and retain lots of useful metadata, like track segments).</p>
 
-<p>If you logged the GPS data with a computer... well, it could be any format, depending on how it is logged. One trick would be to log the NMEA sentences as they came from the GPS directly into a file. Once the logging is done, GPSBabel can convert these NMEA sentences directly into GPX format. Usually these are one second fixes, so this would yeild very good results - however, lugging around a laptop to log the data might not be convenient. A PDA might be convenient, though...</p>
+<p>If you logged the GPS data with a computer... well, it could be any format, depending on how it is logged. One trick would be to log the NMEA sentences as they came from the GPS directly into a file. Once the logging is done, GPSBabel can convert these NMEA sentences directly into GPX format. Usually these are one second fixes, so this would yield very good results - however, lugging around a laptop to log the data might not be convenient. A PDA might be convenient, though...</p>
 
-<p>The other thing to know about GPX is that is stores data quite cleverly, seperating tracks into "track segments". This can be explained quite simply with an example. When I drive through a tunnel with my GPS, it has no reception in the tunnel. My GPS records this lack of signal on the map by not showing a track between the points where I was in the tunnel. GPSBabel correctly reads this and enters this in the GPX file by seperating the segments with "track segments". Prior to version 1.1, this program ignored track segments and just hauled out points and considered them to be a single track. So if a photo was taken in between the time where there was no GPS data, you would not get a correct answer (depending on the situation). Now, the program will not match a photo between track segments. You can, however, disable this functionality, and still match between track segments.</p>
+<p>The other thing to know about GPX is that is stores data quite cleverly, separating tracks into "track segments". This can be explained quite simply with an example. When I drive through a tunnel with my GPS, it has no reception in the tunnel. My GPS records this lack of signal on the map by not showing a track between the points where I was in the tunnel. GPSBabel correctly reads this and enters this in the GPX file by separating the segments with "track segments". Prior to version 1.1, this program ignored track segments and just hauled out points and considered them to be a single track. So if a photo was taken in between the time where there was no GPS data, you would not get a correct answer (depending on the situation). Now, the program will not match a photo between track segments. You can, however, disable this functionality, and still match between track segments.</p>
 
 <h3>What you need to know:</h3>
 
@@ -59,7 +59,7 @@
 
 <p>The last thing you need to know is the timezone that the camera is set to. GPS data is always in UTC, so when we correlate the photos, we need to know how much to add or subtract to the photos time to make the photos time UTC. Just "know" this value, there are places to add this in in the programs.</p>
 
-<p>(This also assumes that the camera is set for local time where you are taking the photos. It is really arbitrary, so long as you know the difference between your cameras time and UTC. If you really wanted, just set the camera to UTC and be done with it... although thats not so friendly when you try to use the EXIF data for other things. Up to you.)</p>
+<p>(This also assumes that the camera is set for local time where you are taking the photos. It is really arbitrary, so long as you know the difference between your cameras time and UTC. If you really wanted, just set the camera to UTC and be done with it... although that's not so friendly when you try to use the EXIF data for other things. Up to you.)</p>
 
 <p>As an example, here in Perth, Western Australia, the timezone is +8:00. So that is the value that I use when correlating the photos.</p>
 

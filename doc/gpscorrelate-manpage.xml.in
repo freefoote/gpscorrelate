@@ -158,7 +158,7 @@
     <para>This manual page documents briefly the <command>&dhpackage;</command>
       and <command>&dhpackage;-gui</command> commands.</para>
 
-    <para>There is an extended documenation available in HTML format; see below.</para>
+    <para>There is an extended documentation available in HTML format; see below.</para>
 
     <para><command>&dhpackage;</command> is a program that acts on digital images
       in JPEG format filling EXIF (Exchangeable Image File Format) fields
