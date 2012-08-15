@@ -1,0 +1,9 @@
+.gitignore
+*.o
+
+gpscorrelate.1
+doc/gpscorrelate-manpage.xml
+gpscorrelate
+gpscorrelate.exe
+gpscorrelate-gui
+gpscorrelate-gui.exe
