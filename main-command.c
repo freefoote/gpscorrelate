@@ -73,28 +73,25 @@ void PrintVersion(char* ProgramName)
 /* Function to print the usage info. */
 void PrintUsage(char* ProgramName)
 {
-	printf("Usage: %s --gps|-g file.gpx [options] file1.jpg file2.jpg ...\n", ProgramName);
-	printf("--gps or -g file.gpx: required, specifies GPX file with GPS data.\n");
-	printf("--timeadd or -z +/-XX[:XX]: time to add to GPS data to make it match photos.\n");
-	printf("   GPS data is in UTC; photos are not likely to be in UTC. Enter the\n");
-	printf("   timezone used when taking the photos: eg, +8 for Perth.\n");
-	printf("--no-interpolation or -i: disable interpolation between points.\n");
-	printf("   Interpolation is linear, points rounded if disabled.\n");
-	printf("--verbose or -v: show what has been selected.\n");
-	printf("--datum or -d datum: specify measurement datum. If not set, WGS-84 used.\n");
-	printf("--no-write or -n: do not write the exif data. Useful with --verbose.\n");
-	printf("--max-dist or -m time: max time outside points that photo will be matched.\n");
-	printf("   Time is in seconds.\n");
-	printf("--show or -s: Just show the GPS data from the given files, if it exists.\n");
-	printf("--machine or -o: Just show the GPS data from the given files, machine readable output.\n");
-	printf("--remove or -r: Strip GPS tags from the given files, and then quit.\n");
-	printf("--ignore-tracksegs or -t: Interpolate between track segments too.\n");
-	printf("--no-mtime or -M: Don't change mtime of modified files.\n");
-	printf("--fix-datestamps or -f: Fix broken GPS datestamps written with versions < 1.5.2\n");
-	printf("--degmins or -p: Write location as DD MM.MM as was default before < 1.5.3.\n");
-	printf("--photooffset or -O <seconds>: Offset added to photo time to make it match the GPS.\n");
-	printf("--help or -h: display usage/help message.\n");
-	printf("--version or -V: display version information.\n");
+	printf("Usage: %s -g|--gps file.gpx [options] file1.jpg ...\n", ProgramName);
+	puts(  "-g, --gps file.gpx       Specifies GPX file with GPS data (required)\n"
+	       "-z, --timeadd +/-HH[:MM] Time to add to GPS data to make it match photos\n"
+	       "-i, --no-interpolation   Disable interpolation between points; interpolation\n"
+	       "                         is linear, points rounded if disabled\n"
+	       "-d, --datum DATUM        Specify measurement datum (defaults to WGS-84)\n"
+	       "-n, --no-write           Do not write the EXIF data. Useful with --verbose\n"
+	       "-m, --max-dist SECS      Max time outside points that photo will be matched\n"
+	       "-s, --show               Just show the GPS data from the given files\n"
+	       "-o, --machine            Similar to --show but with machine-readable output\n"
+	       "-r, --remove             Strip GPS tags from the given files\n"
+	       "-t, --ignore-tracksegs   Interpolate between track segments, too\n"
+	       "-M, --no-mtime           Don't change mtime of modified files\n"
+	       "-f, --fix-datestamps     Fix broken GPS datestamps written with ver. < 1.5.2\n"
+	       "-p, --degmins            Write location as DD MM.MM (was default before v1.5.3)\n"
+	       "-O, --photooffset SECS   Offset added to photo time to make it match the GPS\n"
+	       "-h, --help               Display usage/help message\n"
+	       "-v, --verbose            Show more detailed output\n"
+	       "-V, --version            Display version information\n");
 }
 
 /* Display the information from an existing file. */
@@ -211,13 +208,10 @@ void FixDatestamp(char* File, int AdjustmentHours, int AdjustmentMinutes, int No
 
 int main(int argc, char** argv)
 {
-	/* Say hello. */
-	printf("EXIF-GPS Photo matching program.\n");
-	printf("Daniel Foote, 2005.\n\n");
-
 	/* If you didn't pass any arguments... */
 	if (argc == 1)
 	{
+		PrintVersion(argv[0]);
 		PrintUsage(argv[0]);
 		exit(EXIT_SUCCESS);
 	}
@@ -358,6 +352,11 @@ int main(int argc, char** argv)
 		} /* End switch(c) */
 	} /* End While(1) */
 	
+	if (ShowDetails)
+	{
+		PrintVersion(argv[0]);
+	}
+
 	/* Check to see if the user passed some files work with. Not much
 	 * good if they didn't. */
 	if (optind < argc)
