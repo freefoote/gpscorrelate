@@ -217,7 +217,7 @@ char* ReadExifData(char* File, double* Lat, double* Long, double* Elev, int* Inc
 		//     -- / 3600 = result
 		//      v   
 		// Each part is added to the final number.
-		Exiv2::Rational RatNum;
+		Exiv2::URational RatNum;
 
 		GPSData = ExifRead["Exif.GPSInfo.GPSLatitude"];
 		if (GPSData.count() < 3)
@@ -341,9 +341,9 @@ char* ReadGPSTimestamp(char* File, char* DateStamp, char* TimeStamp, int* Includ
 		// Seems to include GPS data...
 		*IncludesGPS = 1;
 
-		Exiv2::Rational RatNum1;
-		Exiv2::Rational RatNum2;
-		Exiv2::Rational RatNum3;
+		Exiv2::URational RatNum1;
+		Exiv2::URational RatNum2;
+		Exiv2::URational RatNum3;
 
 		// Read out the Time and Date stamp, for correction.
 		GPSData = ExifRead["Exif.GPSInfo.GPSTimeStamp"];
@@ -471,7 +471,7 @@ int WriteGPSData(char* File, struct GPSPoint* Point, char* Datum, int NoChangeMt
 	double FracPart;
 
 	// Do all the easy constant ones first.
-	// GPSVersionID tag: standard says is should be four bytes: 02 00 00 00
+	// GPSVersionID tag: standard says it should be four bytes: 02 00 00 00
 	//  (and, must be present).
 	Exiv2::Value::AutoPtr Value = Exiv2::Value::create(Exiv2::unsignedByte);
 	Value->read("2 0 0 0");
@@ -620,7 +620,7 @@ int WriteGPSData(char* File, struct GPSPoint* Point, char* Datum, int NoChangeMt
 		memcpy(&TimeStamp, tmp2, sizeof(struct tm));
 	}
 
-	Value = Exiv2::Value::create(Exiv2::signedRational);
+	Value = Exiv2::Value::create(Exiv2::unsignedRational);
 	snprintf(ScratchBuf, 100, "%d/1 %d/1 %d/1",
 			TimeStamp.tm_hour, TimeStamp.tm_min,
 			TimeStamp.tm_sec);
@@ -628,7 +628,7 @@ int WriteGPSData(char* File, struct GPSPoint* Point, char* Datum, int NoChangeMt
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSTimeStamp"), Value.get());
 
 	// And we should also do a datestamp.
-	Value = Exiv2::Value::create(Exiv2::signedRational);
+	Value = Exiv2::Value::create(Exiv2::unsignedRational);
 	snprintf(ScratchBuf, 100, "%d/1 %d/1 %d/1",
 			TimeStamp.tm_year + 1900,
 			TimeStamp.tm_mon + 1,
@@ -700,8 +700,8 @@ int WriteFixedDatestamp(char* File, time_t Time)
 	char ScratchBuf[100];
 
 	Exiv2::Value::AutoPtr Value;
-	Value = Exiv2::Value::create(Exiv2::signedRational);
-	snprintf(ScratchBuf, 100, "%d/1 %d/1 %d/1",
+	Value = Exiv2::Value::create(Exiv2::unsignedRational);
+	snprintf(ScratchBuf, sizeof(ScratchBuf), "%d/1 %d/1 %d/1",
 			TimeStamp.tm_year + 1900,
 			TimeStamp.tm_mon + 1,
 			TimeStamp.tm_mday);
@@ -709,8 +709,8 @@ int WriteFixedDatestamp(char* File, time_t Time)
 	ExifToWrite.erase(ExifToWrite.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSDateStamp")));
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSDateStamp"), Value.get());
 	
-	Value = Exiv2::Value::create(Exiv2::signedRational);
-	snprintf(ScratchBuf, 100, "%d/1 %d/1 %d/1",
+	Value = Exiv2::Value::create(Exiv2::unsignedRational);
+	snprintf(ScratchBuf, sizeof(ScratchBuf), "%d/1 %d/1 %d/1",
 			TimeStamp.tm_hour, TimeStamp.tm_min,
 			TimeStamp.tm_sec);
 	Value->read(ScratchBuf);

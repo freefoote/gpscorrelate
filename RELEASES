@@ -112,3 +112,7 @@ v1.6.0: 5 April 2009
 v1.6.1: 13 February 2010
 	- Added desktop icon created by Till Maas.
 	- Added a patch to fix future build issues on Fedora.
+
+v1.X: TBD
+	- Dan Fandrich took over maintenance of gpscorrelate
+	- Fixed to write GPSTimeStamp tag as unsigned rational, as per spec
