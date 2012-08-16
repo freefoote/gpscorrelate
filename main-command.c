@@ -67,7 +67,7 @@ static struct option program_options[] = {
 /* Function to print the version - near the top for easy modification. */
 void PrintVersion(char* ProgramName)
 {
-	printf("%s, v 1.6.1, 13 February 2010. Daniel Foote, 2005-2010. GNU GPL.\n", ProgramName);
+	printf("%s, ver. " PACKAGE_VERSION ". Daniel Foote, 2005-2010. GNU GPL.\n", ProgramName);
 }
 
 /* Function to print the usage info. */
