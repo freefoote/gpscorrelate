@@ -31,12 +31,13 @@
 extern "C" {
 #endif
 	
-char* ReadExifDate(char* File, int* IncludesGPS);
-char* ReadExifData(char* File, double* Lat, double* Long, double* Elevation, int* IncludesGPS);
-char* ReadGPSTimestamp(char* File, char* DateStamp, char* TimeStamp, int* IncludesGPS);
-int WriteGPSData(char* File, struct GPSPoint* Point, char* Datum, int NoChangeMtime, int DegMinSecs);
-int WriteFixedDatestamp(char* File, time_t TimeStamp);
-int RemoveGPSExif(char* File, int NoChangeMtime);
+char* ReadExifDate(const char* File, int* IncludesGPS);
+char* ReadExifData(const char* File, double* Lat, double* Long, double* Elevation, int* IncludesGPS);
+char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* IncludesGPS);
+int WriteGPSData(const char* File, const struct GPSPoint* Point,
+		 const char* Datum, int NoChangeMtime, int DegMinSecs);
+int WriteFixedDatestamp(const char* File, time_t TimeStamp);
+int RemoveGPSExif(const char* File, int NoChangeMtime);
 
 #ifdef __cplusplus
 }

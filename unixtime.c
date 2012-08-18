@@ -32,7 +32,7 @@
 
 #include "unixtime.h"
 
-time_t ConvertToUnixTime(char* StringTime, char* Format,
+time_t ConvertToUnixTime(const char* StringTime, const char* Format,
 		int TZOffsetHours, int TZOffsetMinutes)
 {
 	/* Read the time using the specified format. 

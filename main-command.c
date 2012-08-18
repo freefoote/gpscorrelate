@@ -43,7 +43,7 @@
 #include "correlate.h"
 
 /* Command line options structure. */
-static struct option program_options[] = {
+static const struct option program_options[] = {
 	{ "gps", required_argument, 0, 'g' },
 	{ "timeadd", required_argument, 0, 'z'},
 	{ "no-interpolation", no_argument, 0, 'i'},
@@ -65,13 +65,13 @@ static struct option program_options[] = {
 };
 
 /* Function to print the version - near the top for easy modification. */
-void PrintVersion(char* ProgramName)
+static void PrintVersion(const char* ProgramName)
 {
 	printf("%s, ver. " PACKAGE_VERSION ". Daniel Foote, 2005-2010. GNU GPL.\n", ProgramName);
 }
 
 /* Function to print the usage info. */
-void PrintUsage(char* ProgramName)
+static void PrintUsage(const char* ProgramName)
 {
 	printf("Usage: %s -g|--gps file.gpx [options] file1.jpg ...\n", ProgramName);
 	puts(  "-g, --gps file.gpx       Specifies GPX file with GPS data (required)\n"
@@ -95,14 +95,12 @@ void PrintUsage(char* ProgramName)
 }
 
 /* Display the information from an existing file. */
-void ShowFileDetails(char* File, int MachineReadable)
+static void ShowFileDetails(const char* File, int MachineReadable)
 {
 	double Lat, Long, Elev;
 	int IncludesGPS = 0;
-	char* Time = NULL;
 	Lat = Long = Elev = 0;
-
-	Time = ReadExifData(File, &Lat, &Long, &Elev, &IncludesGPS);
+	char* Time = ReadExifData(File, &Lat, &Long, &Elev, &IncludesGPS);
 
 	if (Time)
 	{
@@ -141,7 +139,7 @@ void ShowFileDetails(char* File, int MachineReadable)
 			
 /* Remove all GPS exif tags from a file. Not really that useful, but... */
 /* BUG: presently removes tags even on read-only files. Hmm. */
-void RemoveGPSTags(char* File, int NoChangeMtime)
+static void RemoveGPSTags(const char* File, int NoChangeMtime)
 {
 	if (RemoveGPSExif(File, NoChangeMtime))
 	{
@@ -153,7 +151,7 @@ void RemoveGPSTags(char* File, int NoChangeMtime)
 
 /* Fix GPSDatestamp tags, if they were incorrect, as found with versions
  * earlier than 1.5.2. */
-void FixDatestamp(char* File, int AdjustmentHours, int AdjustmentMinutes, int NoWriteExif)
+static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMinutes, int NoWriteExif)
 {
 	/* Read the timestamp data. */
 	char DateStamp[12];

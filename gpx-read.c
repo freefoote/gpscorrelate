@@ -35,10 +35,10 @@
 #include "unixtime.h"
 #include "gpsstructure.h"
 
-struct GPSPoint* FirstPoint;
-struct GPSPoint* LastPoint;
+static struct GPSPoint* FirstPoint;
+static struct GPSPoint* LastPoint;
 
-void ExtractTrackPoints(xmlNodePtr Start)
+static void ExtractTrackPoints(xmlNodePtr Start)
 {
 	/* The pointer passed to us should be the start
 	 * of a heap of trkpt's. So walk though them,
@@ -46,15 +46,15 @@ void ExtractTrackPoints(xmlNodePtr Start)
 	xmlNodePtr Current = NULL;
 	xmlNodePtr CCurrent = NULL;
 	xmlAttrPtr Properties = NULL;
-	char* Lat;
-	char* Long;
-	char* Elev;
-	char* Time;
+	const char* Lat;
+	const char* Long;
+	const char* Elev;
+	const char* Time;
 
 	for (Current = Start; Current; Current = Current->next)
 	{
 		if ((Current->type == XML_ELEMENT_NODE) &&
-			(strcmp((char *)Current->name, "trkpt") == 0))
+			(strcmp((const char *)Current->name, "trkpt") == 0))
 		{
 			/* This is indeed a trackpoint. Extract! */
 
@@ -72,13 +72,13 @@ void ExtractTrackPoints(xmlNodePtr Start)
 					Properties;
 					Properties = Properties->next)
 			{
-				if (strcmp((char *)Properties->name, "lat") == 0)
+				if (strcmp((const char *)Properties->name, "lat") == 0)
 				{
-					Lat = (char *)Properties->children->content;
+					Lat = (const char *)Properties->children->content;
 				}
-				if (strcmp((char *)Properties->name, "lon") == 0)
+				if (strcmp((const char *)Properties->name, "lon") == 0)
 				{
-					Long = (char *)Properties->children->content;
+					Long = (const char *)Properties->children->content;
 				}
 			}
 
@@ -90,15 +90,15 @@ void ExtractTrackPoints(xmlNodePtr Start)
 					CCurrent;
 					CCurrent = CCurrent->next)
 			{
-				if (strcmp((char *)CCurrent->name, "ele") == 0)
+				if (strcmp((const char *)CCurrent->name, "ele") == 0)
 				{
 					if (CCurrent->children)
-						Elev = (char *)CCurrent->children->content;
+						Elev = (const char *)CCurrent->children->content;
 				}
-				if (strcmp((char *)CCurrent->name, "time") == 0)
+				if (strcmp((const char *)CCurrent->name, "time") == 0)
 				{
 					if (CCurrent->children)
-						Time = (char *)CCurrent->children->content;
+						Time = (const char *)CCurrent->children->content;
 				}
 			}
 
@@ -153,7 +153,7 @@ void ExtractTrackPoints(xmlNodePtr Start)
 	/* Return control to the recursive function... */
 }
 
-void FindTrackSeg(xmlNodePtr Start)
+static void FindTrackSeg(xmlNodePtr Start)
 {
 	/* Go recursive till we find a <trgseg> tag. */
 	xmlNodePtr Current = NULL;
@@ -161,7 +161,7 @@ void FindTrackSeg(xmlNodePtr Start)
 	for (Current = Start; Current; Current = Current->next)
 	{
 		if ((Current->type == XML_ELEMENT_NODE) &&
-			(strcmp((char *)Current->name, "trkseg") == 0))
+			(strcmp((const char *)Current->name, "trkseg") == 0))
 		{
 			/* Found it... the children should
 			 * all be trkpt's. */
@@ -181,7 +181,7 @@ void FindTrackSeg(xmlNodePtr Start)
 }
 
 
-struct GPSPoint* ReadGPX(char* File)
+struct GPSPoint* ReadGPX(const char* File)
 {
 	/* Init the libxml library. Also checks version. */
 	LIBXML_TEST_VERSION
@@ -209,7 +209,7 @@ struct GPSPoint* ReadGPX(char* File)
 
 	/* Check that this is indeed a GPX - the root node
 	 * should be "gpx". */
-	if (strcmp((char *)GPXRoot->name, "gpx") == 0)
+	if (strcmp((const char *)GPXRoot->name, "gpx") == 0)
 	{
 		/* Ok, it is a GPX file. */
 	} else {
@@ -246,7 +246,7 @@ struct GPSPoint* ReadGPX(char* File)
 	FirstPoint = NULL;
 	LastPoint = NULL;
 	
-	char* OldLocale = setlocale(LC_NUMERIC, NULL);
+	const char* OldLocale = setlocale(LC_NUMERIC, NULL);
 	setlocale(LC_NUMERIC, "C");
 	
 	FindTrackSeg(GPXRoot);
@@ -275,4 +275,3 @@ void FreePointList(struct GPSPoint* List)
 		CurrentFree = NextFree;
 	}
 };
-		

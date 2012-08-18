@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
 };
 */
 
-char* ReadExifDate(char* File, int* IncludesGPS)
+char* ReadExifDate(const char* File, int* IncludesGPS)
 {
 	// Open and read the file.
 	Exiv2::ExifData ExifRead;
@@ -143,7 +143,7 @@ char* ReadExifDate(char* File, int* IncludesGPS)
 	return Copy; // Its up to the caller to free this.
 };
 
-char* ReadExifData(char* File, double* Lat, double* Long, double* Elev, int* IncludesGPS)
+char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, int* IncludesGPS)
 {
 	// This function varies in that it reads
 	// much more data than the last, specifically
@@ -282,7 +282,7 @@ char* ReadExifData(char* File, double* Lat, double* Long, double* Elev, int* Inc
 
 // This function is for the --fix-datestamp option.
 // DateStamp and TimeStamp should be 12-char strings.
-char* ReadGPSTimestamp(char* File, char* DateStamp, char* TimeStamp, int* IncludesGPS)
+char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* IncludesGPS)
 {
 	// This function varies in that it reads
 	// much more data than the last, specifically
@@ -436,7 +436,8 @@ void ConvertToRational(double Number,
 
 }
 
-int WriteGPSData(char* File, struct GPSPoint* Point, char* Datum, int NoChangeMtime, int DegMinSecs)
+int WriteGPSData(const char* File, const struct GPSPoint* Point,
+		 const char* Datum, int NoChangeMtime, int DegMinSecs)
 {
 	// Write the GPS data to the file...
 
@@ -651,7 +652,7 @@ int WriteGPSData(char* File, struct GPSPoint* Point, char* Datum, int NoChangeMt
 	
 };
 
-int WriteFixedDatestamp(char* File, time_t Time)
+int WriteFixedDatestamp(const char* File, time_t Time)
 {
 	// Write the GPS data to the file...
 
@@ -728,7 +729,7 @@ int WriteFixedDatestamp(char* File, time_t Time)
 	return 1;
 }
 
-int RemoveGPSExif(char* File, int NoChangeMtime)
+int RemoveGPSExif(const char* File, int NoChangeMtime)
 {
 	struct stat statbuf;
 	struct stat statbuf2;

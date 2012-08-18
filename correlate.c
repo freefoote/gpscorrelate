@@ -36,20 +36,21 @@
 #include "unixtime.h"
 
 /* Internal functions used to make it work. */
-void Round(struct GPSPoint* First, struct GPSPoint* Result,
-		struct CorrelateOptions* Options, time_t PhotoTime);
-void Interpolate(struct GPSPoint* First, struct GPSPoint* Result,
-		struct CorrelateOptions* Options, time_t PhotoTime);
+static void Round(const struct GPSPoint* First, struct GPSPoint* Result,
+		  time_t PhotoTime);
+static void Interpolate(const struct GPSPoint* First, struct GPSPoint* Result,
+			time_t PhotoTime);
 
 /* This function returns a GPSPoint with the point selected for the
  * file. This allows us to do funky stuff like not actually write
  * the files - ie, just correlate and keep into memory... */
 
-struct GPSPoint* CorrelatePhoto(char* Filename,
+struct GPSPoint* CorrelatePhoto(const char* Filename,
 		struct CorrelateOptions* Options)
 {
 	/* Read out the timestamp from the EXIF data. */
-	char* TimeTemp; int IncludesGPS = 0;
+	char* TimeTemp;
+	int IncludesGPS = 0;
 	TimeTemp = ReadExifDate(Filename, &IncludesGPS);
 	if (!TimeTemp)
 	{
@@ -144,7 +145,7 @@ struct GPSPoint* CorrelatePhoto(char* Filename,
 	/* Time to run through the list, and see if our PhotoTime
 	 * is in between two points. Alternately, it might be
 	 * exactly on a point... even better... */
-	struct GPSPoint* Search;
+	const struct GPSPoint* Search;
 	struct GPSPoint* Actual = malloc(sizeof(struct GPSPoint));
 
 	Options->Result = CORR_NOMATCH; /* For convenience later */
@@ -232,14 +233,12 @@ struct GPSPoint* CorrelatePhoto(char* Filename,
 			if (Options->NoInterpolate)
 			{
 				/* No interpolation. Round. */
-				Round(Search, Actual,
-						Options, PhotoTime);
+				Round(Search, Actual, PhotoTime);
 				Options->Result = CORR_ROUND;
 				break;
 			} else {
 				/* Interpolate away! */
-				Interpolate(Search, Actual,
-						Options, PhotoTime);
+				Interpolate(Search, Actual, PhotoTime);
 				Options->Result = CORR_INTERPOLATED;
 				break;
 			}
@@ -279,12 +278,12 @@ struct GPSPoint* CorrelatePhoto(char* Filename,
 	return NULL;
 };
 
-void Round(struct GPSPoint* First, struct GPSPoint* Result,
-		struct CorrelateOptions* Options, time_t PhotoTime)
+void Round(const struct GPSPoint* First, struct GPSPoint* Result,
+	   time_t PhotoTime)
 {
 	/* Round the point between the two points - ie, it will end
 	 * up being one or the other point. */
-	struct GPSPoint* CopyFrom = NULL;
+	const struct GPSPoint* CopyFrom = NULL;
 
 	/* Determine the difference between the two points. 
 	 * We're using the scale function used by interpolate.
@@ -312,8 +311,8 @@ void Round(struct GPSPoint* First, struct GPSPoint* Result,
 	
 }
 
-void Interpolate(struct GPSPoint* First, struct GPSPoint* Result,
-		struct CorrelateOptions* Options, time_t PhotoTime)
+void Interpolate(const struct GPSPoint* First, struct GPSPoint* Result,
+		 time_t PhotoTime)
 {
 	/* Interpolate between the two points. The first point
 	 * is First, the other First->Next. Results into Result. */

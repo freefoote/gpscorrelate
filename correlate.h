@@ -77,6 +77,6 @@ struct CorrelateOptions {
 #define CORR_GPSDATAEXISTS  8
 
 
-struct GPSPoint* CorrelatePhoto(char* Filename, 
+struct GPSPoint* CorrelatePhoto(const char* Filename, 
 		struct CorrelateOptions* Options);
 

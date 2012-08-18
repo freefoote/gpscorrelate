@@ -137,7 +137,7 @@ struct GUIPhotoList* LastPhoto = NULL;
 
 struct GPSPoint* GPSData = NULL;
 
-char* ConfigDefaults[] = {
+static const char* ConfigDefaults[] = {
 	"interpolate", "true",
 	"dontwrite", "false",
 	"nochangemtime", "false",
@@ -158,7 +158,7 @@ gchar* GPXOpenDir = NULL;
 gchar* PhotoOpenDir = NULL;
 
 /* Load settings, insert defaults. */
-void LoadSettings()
+void LoadSettings(void)
 {
 	/* Generate the filename. */
 	const char* UserHomeDir = g_get_user_config_dir();
@@ -189,7 +189,7 @@ void LoadSettings()
 	}
 }
 
-void SaveSettings()
+void SaveSettings(void)
 {
 	/* Save the settings to file, and deallocate the settings. */
 	FILE* OutputFile;
@@ -648,7 +648,7 @@ void AddPhotosButtonPress( GtkWidget *Widget, gpointer Data )
 
 }
 
-void AddPhotoToList(char* Filename)
+void AddPhotoToList(const char* Filename)
 {
 	/* Add the photo to the list. Query out the exif tags
 	 * at the same time, too - so we can add them to the
@@ -659,13 +659,12 @@ void AddPhotoToList(char* Filename)
 	/* Get ready to read the relevant data. */
 	GtkTreeIter AddStuff;
 
-	char* Time = NULL;
 	double Lat, Long, Elev;
 	Lat = Long = Elev = 0;
 	int IncludesGPS = 0;
 
 	/* Read the EXIF data. */
-	Time = ReadExifData(Filename, &Lat, &Long, &Elev, &IncludesGPS);
+	char *Time = ReadExifData(Filename, &Lat, &Long, &Elev, &IncludesGPS);
 
 	/* Note: we don't check if Time is NULL here. It is done for
 	 * us in SetListItem, and we check again before we attempt
@@ -846,17 +845,14 @@ void RemovePhotosButtonPress( GtkWidget *Widget, gpointer Data )
 
 }
 
-void SetListItem(GtkTreeIter* Iter, char* Filename, char* Time, double Lat,
+void SetListItem(GtkTreeIter* Iter, const char* Filename, char* Time, double Lat,
 		double Long, double Elev, char* PassedState, int IncludesGPS)
 {
 	/* Scratch areas. */
-	char LatScratch[100];
-	char LongScratch[100];
-	char ElevScratch[100];
+	char LatScratch[100] = "";
+	char LongScratch[100] = "";
+	char ElevScratch[100] = "";
 	char* State = NULL;
-	strncpy(LatScratch, "", 100);
-	strncpy(LongScratch, "", 100);
-	strncpy(ElevScratch, "", 100);
 	
 	/* Format all the data. */
 	if (!Time)
@@ -875,25 +871,25 @@ void SetListItem(GtkTreeIter* Iter, char* Filename, char* Time, double Lat,
 			/* Lat can't be greater than 90 degrees. */
 			if (Lat < 200)
 			{
-				snprintf(LatScratch, 100, "%f (%c)",
+				snprintf(LatScratch, sizeof(LatScratch), "%f (%c)",
 					Lat, (Lat < 0) ? 'S' : 'N');
 			} else {
-				snprintf(LatScratch, 100, " ");
+				snprintf(LatScratch, sizeof(LatScratch), " ");
 			}
 			/* Long can't be greater than 180 degrees. */
 			if (Long < 200)
 			{
-				snprintf(LongScratch, 100, "%f (%c)",
+				snprintf(LongScratch, sizeof(LongScratch), "%f (%c)",
 					Long, (Long < 0) ? 'W' : 'E');
 			} else {
-				snprintf(LongScratch, 100, " ");
+				snprintf(LongScratch, sizeof(LongScratch), " ");
 			}
 			/* Radius of earth ~6000km */
 			if (Elev > -7000000)
 			{
-				snprintf(ElevScratch, 100, "%fm", Elev);
+				snprintf(ElevScratch, sizeof(ElevScratch), "%fm", Elev);
 			} else {
-				snprintf(ElevScratch, 100, " ");
+				snprintf(ElevScratch, sizeof(ElevScratch), " ");
 			}
 		} else {
 			/* Placeholders for the lack of data. */
@@ -915,7 +911,7 @@ void SetListItem(GtkTreeIter* Iter, char* Filename, char* Time, double Lat,
 	
 }
 
-void SetState(GtkTreeIter* Iter, char* State)
+void SetState(GtkTreeIter* Iter, const char* State)
 {
 	/* Set the state on the item... just the state. */
 	gtk_list_store_set(PhotoListStore, Iter,

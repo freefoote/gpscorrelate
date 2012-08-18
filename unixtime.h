@@ -28,6 +28,6 @@
 #define EXIF_DATE_FORMAT "%d:%d:%d %d:%d:%d"
 #define GPX_DATE_FORMAT "%d-%d-%dT%d:%d:%dZ"
 
-time_t ConvertToUnixTime(char* StringTime, char* Format,
+time_t ConvertToUnixTime(const char* StringTime, const char* Format,
 		int TZOffsetHours, int TZOffsetMinutes);
 
