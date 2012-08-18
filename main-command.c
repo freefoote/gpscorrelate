@@ -593,6 +593,7 @@ int main(int argc, char** argv)
 					Result->Lat, Result->Long,
 					Result->Elev);
 			}
+			free(Result);
 			/* Ok, that's all from this part... */
 		} else {
 			/* We got nothing back. One of a few errors. */

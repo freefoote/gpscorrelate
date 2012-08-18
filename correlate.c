@@ -66,6 +66,7 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 		/* Already have GPS data in the file!
 		 * So we can't do this again... */
 		Options->Result = CORR_GPSDATAEXISTS;
+		free(TimeTemp);
 		return 0;
 	}
 	if (Options->AutoTimeZone)
