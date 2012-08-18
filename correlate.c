@@ -67,6 +67,27 @@ struct GPSPoint* CorrelatePhoto(char* Filename,
 		Options->Result = CORR_GPSDATAEXISTS;
 		return 0;
 	}
+	if (Options->AutoTimeZone)
+	{
+		/* Use the local time zone as of the date of first picture
+		 * as the time for correlating all the remainder. */
+		time_t RealTime;
+
+		/* PhotoTime isn't actually Epoch-based, but will be wrong by
+		 * an amount equal to the the local time zone offset. */
+		time_t PhotoTime =
+			ConvertToUnixTime(TimeTemp, EXIF_DATE_FORMAT, 0, 0);
+		struct tm *PhotoTm = gmtime(&PhotoTime);
+		PhotoTm->tm_isdst = -1;
+		RealTime = mktime(PhotoTm);
+
+		/* Finally, RealTime is the proper Epoch time of the photo.
+		 * The difference from PhotoTime is the time zone offset. */
+		Options->TimeZoneHours = (PhotoTime - RealTime) / 3600;
+		Options->TimeZoneMins = ((PhotoTime - RealTime) % 3600) / 60;
+		Options->AutoTimeZone = 0;
+	}
+	//printf("Using offset %02d:%02d\n", Options->TimeZoneHours, Options->TimeZoneMins);
 
 	/* Now convert the time into Unixtime. */
 	time_t PhotoTime =

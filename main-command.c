@@ -222,6 +222,7 @@ int main(int argc, char** argv)
 	
 	char* GPSData = NULL;        /* Filename of the file with the GPS data. */
 	char* TimeAdjustment = NULL; /* Time adjustment, as passed to program. */
+	int AutoTimeZone = 1;
 	int TimeZoneHours = 0;       /* Integer version of the timezone. */
 	int TimeZoneMins = 0;
 	char* Datum = NULL;          /* Datum of input GPS data. */
@@ -439,6 +440,7 @@ int main(int argc, char** argv)
 		}
 
 		/* printf("Time zone: %d : %d.\n", TimeZoneHours, TimeZoneMins); */
+		AutoTimeZone = 0;
 			
 	}
 
@@ -473,13 +475,14 @@ int main(int argc, char** argv)
 	if (!ShowDetails)
 	{
 		printf("Legend: . = Ok, / = Interpolated, < = Rounded, - = No match, ^ = Too far.\n");
-		printf("        w = Write Fail, ? = No exif date, ! = GPS already present.\n");
+		printf("        w = Write Fail, ? = No EXIF date, ! = GPS already present.\n");
 	}
 
 	/* Set up our options structure for the correlation function. */
 	struct CorrelateOptions Options;
 	Options.NoWriteExif   = NoWriteExif;
 	Options.NoInterpolate = (Interpolate ? 0 : 1);
+	Options.AutoTimeZone  = AutoTimeZone;
 	Options.TimeZoneHours = TimeZoneHours;
 	Options.TimeZoneMins  = TimeZoneMins;
 	Options.FeatherTime   = FeatherTime;

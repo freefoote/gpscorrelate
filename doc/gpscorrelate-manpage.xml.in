@@ -243,7 +243,10 @@
           <para>time to add to GPS data to make it match the timestamps of the
             images. GPS timestamps are in UTC; image timestamps are generally
             in local time.  Enter the timezone used when taking the images: e.g.
-            <userinput>+8</userinput> for Perth </para>
+            <userinput>+8</userinput> for Perth.
+            This defaults to the UTC offset of the local time zone as of the
+            time of the first image processed (versions up to 1.6.1 defaulted to
+            00:00). </para>
         </listitem>
       </varlistentry>
       

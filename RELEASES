@@ -116,3 +116,5 @@ v1.6.1: 13 February 2010
 v1.X: TBD
 	- Dan Fandrich took over maintenance of gpscorrelate
 	- Fixed to write GPSTimeStamp tag as unsigned rational, as per spec
+	- Added automatic time zone offset detection by default (the previous
+	behaviour can be selected with "-z 0")

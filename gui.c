@@ -1115,6 +1115,7 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 	Options.Datum = DatumScratch;
 		
 	/* TimeZone. We may need to extract the timezone from a string. */
+	Options.AutoTimeZone = 0; /* TODO: make this selectable in the GUI somehow */
 	Options.TimeZoneHours = 0;
 	Options.TimeZoneMins = 0;
 	char* TZString = (char*) gtk_entry_get_text(GTK_ENTRY(TimeZoneEntry));

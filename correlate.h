@@ -33,6 +33,7 @@ struct CorrelateOptions {
 	int NoChangeMtime;
 	int TimeZoneHours;  /* To add to photos to make them UTC. */
 	int TimeZoneMins;
+	int AutoTimeZone;
 	int FeatherTime;
 	char* Datum;     /* Datum of the data; when writing. */
 	int DoBetweenTrkSeg; /* Match between track segments. */
