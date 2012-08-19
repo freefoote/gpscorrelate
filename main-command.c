@@ -281,6 +281,7 @@ int main(int argc, char** argv)
 #ifdef WIN32
 				printf("--verbose does not work on win32\n");
 #else
+				PrintVersion(argv[0]);
 				ShowDetails = 1;
 #endif
 				break;
@@ -351,11 +352,6 @@ int main(int argc, char** argv)
 		} /* End switch(c) */
 	} /* End While(1) */
 	
-	if (ShowDetails)
-	{
-		PrintVersion(argv[0]);
-	}
-
 	/* Check to see if the user passed some files work with. Not much
 	 * good if they didn't. */
 	if (optind < argc)
