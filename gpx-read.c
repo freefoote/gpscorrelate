@@ -35,6 +35,7 @@
 #include "unixtime.h"
 #include "gpsstructure.h"
 
+/* Pointers to the first and last points, used during parsing */
 static struct GPSPoint* FirstPoint;
 static struct GPSPoint* LastPoint;
 
@@ -180,8 +181,30 @@ static void FindTrackSeg(xmlNodePtr Start)
 
 }
 
+/* Determines and stores the min and max times from the GPS track */
+static void GetTrackRange(struct GPSTrack* Track)
+{
+	/* Requires us to go through the list and keep
+	 * the biggest and smallest. The list should,
+	 * however, be sorted. But we do it this way anyway. */
+	const struct GPSPoint* Fill = NULL;
+	Track->MinTime = Track->Points->Time;
+	for (Fill = Track->Points; Fill; Fill = Fill->Next)
+	{
+		/* Ignore trackseg markers... */
+		if (Fill->Lat == 1000 && Fill->Long == 1000)
+			continue;
+		/* Check the Min time */
+		if (Fill->Time < Track->MinTime)
+			Track->MinTime = Fill->Time;
+		/* Check the Max time */
+		if (Fill->Time > Track->MaxTime) 
+			Track->MaxTime = Fill->Time;
+	}
+}
 
-struct GPSPoint* ReadGPX(const char* File)
+
+int ReadGPX(const char* File, struct GPSTrack* Track)
 {
 	/* Init the libxml library. Also checks version. */
 	LIBXML_TEST_VERSION
@@ -257,16 +280,21 @@ struct GPSPoint* ReadGPX(const char* File)
 	xmlFreeDoc(GPXData);
 	xmlCleanupParser();
 
-	return FirstPoint;
+	Track->Points = FirstPoint;
+
+	/* Find the time range for this track */
+	GetTrackRange(Track);
+
+	return 1;
 };
 
 
-void FreePointList(struct GPSPoint* List)
+void FreeTrack(struct GPSTrack* Track)
 {
 	/* Free the memory associated with the
 	 * GPSPoint list... */
 	struct GPSPoint* NextFree = NULL;
-	struct GPSPoint* CurrentFree = List;
+	struct GPSPoint* CurrentFree = Track->Points;
 	while (1)
 	{
 		if (CurrentFree == NULL) break;
@@ -274,4 +302,5 @@ void FreePointList(struct GPSPoint* List)
 		free(CurrentFree);
 		CurrentFree = NextFree;
 	}
+	Track->Points = NULL;
 };

@@ -41,14 +41,11 @@ struct CorrelateOptions {
 	
 	int Result;
 
-	time_t MinTime;  /* Calculated on first pass. Used to   */
-	time_t MaxTime;  /* determine when to throw photos out. */
-
 	int PhotoOffset; /* Offset applied to Photo time. This is ADDED to PHOTO TIME
 			    to make it match GPS time. In seconds. 
 			    This is (GPS - Photo) */
 
-	struct GPSPoint* Points; /* Points to use... */
+	struct GPSTrack Track; /* Points to use... */
 };
 
 /* Return codes in order:
@@ -79,4 +76,3 @@ struct CorrelateOptions {
 
 struct GPSPoint* CorrelatePhoto(const char* Filename, 
 		struct CorrelateOptions* Options);
-

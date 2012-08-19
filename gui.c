@@ -135,7 +135,7 @@ struct GUIPhotoList {
 struct GUIPhotoList* FirstPhoto = NULL;
 struct GUIPhotoList* LastPhoto = NULL;
 
-struct GPSPoint* GPSData = NULL;
+struct GPSTrack GPSData;
 
 static const char* ConfigDefaults[] = {
 	"interpolate", "true",
@@ -577,7 +577,7 @@ gboolean DestroyWindow(GtkWidget *Widget,
 	}
 	
 	/* Free the memory for the GPS data, if applicable. */
-	if (GPSData) FreePointList(GPSData);
+	FreeTrack(&GPSData);
 
 	/* Tell GTK that we're done. */
 	gtk_exit(0);
@@ -951,14 +951,10 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 		/* Process the result of the dialog... */
 		FileName = gtk_file_chooser_get_filename (GTK_FILE_CHOOSER(GPSDataDialog));
 
-		/* Sanity check: do we already have data?
+		/* Sanity check: free the GPS track in case we already have one.
 		 * Note: we check this now, because if we cancelled the dialog,
 		 * we should run with the old data. */
-		if (GPSData)
-		{
-			/* We already had GPS data. Free that first. */
-			FreePointList(GPSData);
-		}
+		FreeTrack(&GPSData);
 
 		/* Prepare our "scratch" for rewriting labels. */
 		Scratch = malloc(sizeof(char) * (strlen(FileName) + 100));
@@ -976,13 +972,13 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 		GtkGUIUpdate();
 		 
 		/* Read in the new data... assuming we can. */
-		GPSData = ReadGPX(FileName);
+		int ReadOk = ReadGPX(FileName, &GPSData);
 
 		/* Close the dialog now we're done. */
 		gtk_widget_destroy(ErrorDialog);
 
 		/* Check if the data was read ok. */
-		if (GPSData)
+		if (ReadOk)
 		{
 			/* It's all good!
 			 * Adjust the label to say so. */
@@ -1042,7 +1038,7 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 		return;
 	}
 
-	if (GPSData == NULL)
+	if (GPSData.Points == NULL)
 	{
 		/* No GPS data... */
 		ErrorDialog = gtk_message_dialog_new (GTK_WINDOW(MatchWindow),
@@ -1132,11 +1128,8 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 	/* Photo Offset time */
 	Options.PhotoOffset = atoi(gtk_entry_get_text(GTK_ENTRY(PhotoOffsetEntry)));
 
-	/* Clean up some other pointers in the structure. */
-	Options.MinTime = 0;
-	Options.MaxTime = 0;
-
-	Options.Points = GPSData;
+	/* Store the GPS track */
+	Options.Track = GPSData;
 
 	/* Walk through the list, correlating, and updating the screen. */
 	struct GUIPhotoList* Walk;

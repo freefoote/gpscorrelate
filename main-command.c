@@ -218,7 +218,7 @@ int main(int argc, char** argv)
 	/* But first, some variables to store stuff in. */
 	int c;
 	
-	char* GPSData = NULL;        /* Filename of the file with the GPS data. */
+	struct GPSTrack Track = {0,0,0}; /* List of GPS waypoints */
 	char* TimeAdjustment = NULL; /* Time adjustment, as passed to program. */
 	int AutoTimeZone = 1;
 	int TimeZoneHours = 0;       /* Integer version of the timezone. */
@@ -236,6 +236,7 @@ int main(int argc, char** argv)
 	int FixDatestamps = 0;
 	int DegMinSecs = 1;
 	int PhotoOffset = 0;
+	int HaveTrack = 0;
 
 	while (1)
 	{
@@ -252,10 +253,18 @@ int main(int argc, char** argv)
 			case 'g':
 				/* This parameter specifies the GPS data.
 				 * It must be present. */
-				if (optarg)
+				if (optarg && !HaveTrack)
 				{
-					GPSData = malloc((sizeof(char) * strlen(optarg)) + 1);
-					strncpy(GPSData, optarg, strlen(optarg)+1);
+					/* Read the XML file into memory and extract the "points". */
+					/* The returned pointer is the start of a singly-linked list. */
+					printf("Reading GPS Data...");
+					fflush(stdout);
+					HaveTrack = ReadGPX(optarg, &Track);
+					printf("\n");
+					if (!HaveTrack)
+					{
+						exit(EXIT_FAILURE);
+					}
 				}
 				break;
 			case 'z':
@@ -438,29 +447,13 @@ int main(int argc, char** argv)
 			
 	}
 
-	/* See if the user did pass any GPS data. 
-	 * If not, don't continue. */
-	if (GPSData == NULL)
+	if (!HaveTrack)
 	{
-		printf("You need to pass some GPS data! Otherwise, nothing to match from!\n");
-		exit(EXIT_FAILURE);
-	}
-	
-	/* Read the XML file into memory and extract the "points". */
-	/* The returned pointer is the start of a singly-linked list. */
-	printf("Reading GPS Data...");
-	struct GPSPoint* Points = ReadGPX(GPSData);
-	printf("\n");
-
-	if (Points)
-	{
-		/* GPS Data was read correctly. */
-	} else {
 		/* GPS Data was not read correctly... */
 		/* Tell the user we are bailing.
 		 * Not really required, seeing as ReadGPX should
 		 * inform the user anyway... but, doesn't hurt! */
-		printf("Failure reading/processing GPS data.\n");
+		printf("Cannot continue since no GPS data is available.\n");
 		exit(EXIT_FAILURE);
 	}
 
@@ -486,10 +479,7 @@ int main(int argc, char** argv)
 	Options.DegMinSecs    = DegMinSecs;
 	Options.PhotoOffset   = PhotoOffset;
 
-	Options.MinTime = 0;
-	Options.MaxTime = 0;
-
-	Options.Points = Points;
+	Options.Track         = Track;
 
 	/* Twig with the terminal settings to make the single character
 	 * output stuff work right. */
@@ -665,8 +655,7 @@ int main(int argc, char** argv)
 
 
 	/* Clean up! */
-	FreePointList(Points);
-	if (GPSData) free(GPSData);
+	FreeTrack(&Track);
 	if (TimeAdjustment) free(TimeAdjustment);
 	if (Datum) free(Datum);
 	

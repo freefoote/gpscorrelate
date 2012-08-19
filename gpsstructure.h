@@ -36,3 +36,9 @@ struct GPSPoint {
 	int EndOfSegment;
 	struct GPSPoint* Next;
 };
+
+struct GPSTrack {
+	struct GPSPoint* Points;
+	time_t MinTime;
+	time_t MaxTime;
+};

@@ -104,30 +104,6 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 	 * be freed for us. */
 	free(TimeTemp);
 
-	/* Check to see if MinTime and MaxTime are filled in.
-	 * If not, fill them in. */
-	if (Options->MinTime == 0 && Options->MaxTime == 0)
-	{
-		/* Alright, fill them in! 
-		 * Requires us to go through the list and keeping
-		 * the biggest and smallest. The list should,
-		 * however, be sorted. But we do it this way anyway. */
-		struct GPSPoint* Fill = NULL;
-		Options->MinTime = Options->Points->Time;
-		for (Fill = Options->Points; Fill; Fill = Fill->Next)
-		{
-			/* Ignore trackseg markers... */
-			if (Fill->Lat == 1000 && Fill->Long == 1000)
-				continue;
-			/* Check the Min time */
-			if (Fill->Time < Options->MinTime)
-				Options->MinTime = Fill->Time;
-			/* Check the Max time */
-			if (Fill->Time > Options->MaxTime) 
-				Options->MaxTime = Fill->Time;
-		}
-	}
-
 	/* Check that the photo is within the times that
 	 * our tracks are for. Can't really match it if
 	 * we were not logging when it was taken. */
@@ -135,8 +111,8 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 	 * same file will still make it inside of this. In
 	 * some cases, it won't matter, but if it does, then
 	 * keep this in mind!! */
-	if ((PhotoTime < Options->MinTime) ||
-			(PhotoTime > Options->MaxTime))
+	if ((PhotoTime < Options->Track.MinTime) ||
+			(PhotoTime > Options->Track.MaxTime))
 	{
 		/* Outside the range. Abort. */
 		Options->Result = CORR_NOMATCH;
@@ -151,7 +127,7 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 
 	Options->Result = CORR_NOMATCH; /* For convenience later */
 	
-	for (Search = Options->Points; Search; Search = Search->Next)
+	for (Search = Options->Track.Points; Search; Search = Search->Next)
 	{
 		/* Sanity check: we need to peek at the next point.
 		 * Make sure we can. */

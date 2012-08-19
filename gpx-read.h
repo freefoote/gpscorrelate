@@ -25,5 +25,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-struct GPSPoint* ReadGPX(const char* File);
-void FreePointList(struct GPSPoint* List);
+struct GPSTrack;
+
+int ReadGPX(const char* File, struct GPSTrack* Track);
+void FreeTrack(struct GPSTrack* Track);
