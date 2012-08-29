@@ -609,6 +609,20 @@ void AddPhotosButtonPress( GtkWidget *Widget, gpointer Data )
 	gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(AddPhotosDialog), TRUE);
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(AddPhotosDialog), PhotoOpenDir);
 
+	GtkFileFilter *JpgFilter = gtk_file_filter_new();
+	if (JpgFilter) {
+		gtk_file_filter_add_pattern(JpgFilter, "*.[jJ][pP][gG]");
+		gtk_file_filter_add_pattern(JpgFilter, "*.[jJ][pP][eE][gG]");
+		gtk_file_filter_set_name(JpgFilter, "JPEG images");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(AddPhotosDialog), JpgFilter);
+	}
+	GtkFileFilter *AllFilter = gtk_file_filter_new();
+	if (AllFilter) {
+		gtk_file_filter_add_pattern(AllFilter, "*");
+		gtk_file_filter_set_name(AllFilter, "All files");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(AddPhotosDialog), AllFilter);
+	}
+
 	/* Run the dialog. */
 	if (gtk_dialog_run (GTK_DIALOG (AddPhotosDialog)) == GTK_RESPONSE_ACCEPT)
 	{
@@ -944,6 +958,19 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 
 	gtk_file_chooser_set_select_multiple(GTK_FILE_CHOOSER(GPSDataDialog), FALSE);
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(GPSDataDialog), GPXOpenDir);
+
+	GtkFileFilter *GpxFilter = gtk_file_filter_new();
+	if (GpxFilter) {
+		gtk_file_filter_add_pattern(GpxFilter, "*.[gG][pP][xX]");
+		gtk_file_filter_set_name(GpxFilter, "GPX files");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(GPSDataDialog), GpxFilter);
+	}
+	GtkFileFilter *AllFilter = gtk_file_filter_new();
+	if (AllFilter) {
+		gtk_file_filter_add_pattern(AllFilter, "*");
+		gtk_file_filter_set_name(AllFilter, "All files");
+		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(GPSDataDialog), AllFilter);
+	}
 
 	/* Run the dialog... */
 	if (gtk_dialog_run (GTK_DIALOG (GPSDataDialog)) == GTK_RESPONSE_ACCEPT)
