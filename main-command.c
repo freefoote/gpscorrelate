@@ -219,8 +219,7 @@ int main(int argc, char** argv)
 	int c;
 	
 	struct GPSTrack Track = {0,0,0}; /* List of GPS waypoints */
-	char* TimeAdjustment = NULL; /* Time adjustment, as passed to program. */
-	int AutoTimeZone = 1;
+	int HaveTimeAdjustment = 0;  /* Whether -z option was given */
 	int TimeZoneHours = 0;       /* Integer version of the timezone. */
 	int TimeZoneMins = 0;
 	char* Datum = NULL;          /* Datum of input GPS data. */
@@ -274,7 +273,18 @@ int main(int argc, char** argv)
 				/* We only store it here, convert it to numbers later. */
 				if (optarg)
 				{
-					TimeAdjustment = strdup(optarg);
+					/* Break up the adjustment and convert to numbers. */
+					if (strstr(optarg, ":"))
+					{
+						/* Found colon. Split into two. */
+						sscanf(optarg, "%d:%d", &TimeZoneHours, &TimeZoneMins);
+						if (TimeZoneHours < 0)
+						    TimeZoneMins *= -1;
+					} else {
+						/* No colon. Just parse. */
+						TimeZoneHours = atoi(optarg);
+					}
+					HaveTimeAdjustment = 1;
 				}
 				break;
 			case 'O':
@@ -395,24 +405,12 @@ int main(int argc, char** argv)
 	 * earlier than 1.5.2. */
 	if (FixDatestamps)
 	{
-		if (TimeAdjustment == NULL)
+		if (!HaveTimeAdjustment)
 		{
 			printf("You must give a time adjustment for the photos with -z to fix photos.\n");
 			exit(EXIT_SUCCESS);
 		}
 		
-		/* Break up the adjustment and convert to numbers. */
-		if (strstr(TimeAdjustment, ":"))
-		{
-			/* Found colon. Split into two. */
-			sscanf(TimeAdjustment, "%d:%d", &TimeZoneHours, &TimeZoneMins);
-			if (TimeZoneHours < 0)
-			    TimeZoneMins *= -1;
-		} else {
-			/* No colon. Just parse. */
-			TimeZoneHours = atoi(TimeAdjustment);
-		}
-
 		while (optind < argc)
 		{
 			FixDatestamp(argv[optind++], TimeZoneHours, TimeZoneMins, NoWriteExif);
@@ -424,24 +422,6 @@ int main(int argc, char** argv)
 	if (!Datum)
 	{
 		Datum = strdup("WGS-84");
-	}
-	if (TimeAdjustment)
-	{
-		/* Break up the adjustment and convert to numbers. */
-		if (strstr(TimeAdjustment, ":"))
-		{
-			/* Found colon. Split into two. */
-			sscanf(TimeAdjustment, "%d:%d", &TimeZoneHours, &TimeZoneMins);
-			if (TimeZoneHours < 0)
-			    TimeZoneMins *= -1;
-		} else {
-			/* No colon. Just parse. */
-			TimeZoneHours = atoi(TimeAdjustment);
-		}
-
-		/* printf("Time zone: %d : %d.\n", TimeZoneHours, TimeZoneMins); */
-		AutoTimeZone = 0;
-			
 	}
 
 	if (!HaveTrack)
@@ -466,7 +446,7 @@ int main(int argc, char** argv)
 	struct CorrelateOptions Options;
 	Options.NoWriteExif   = NoWriteExif;
 	Options.NoInterpolate = (Interpolate ? 0 : 1);
-	Options.AutoTimeZone  = AutoTimeZone;
+	Options.AutoTimeZone  = !HaveTimeAdjustment;
 	Options.TimeZoneHours = TimeZoneHours;
 	Options.TimeZoneMins  = TimeZoneMins;
 	Options.FeatherTime   = FeatherTime;
@@ -653,8 +633,7 @@ int main(int argc, char** argv)
 
 	/* Clean up! */
 	FreeTrack(&Track);
-	if (TimeAdjustment) free(TimeAdjustment);
-	if (Datum) free(Datum);
+	free(Datum);
 	
 	return 0;
 }
