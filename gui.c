@@ -707,16 +707,13 @@ void AddPhotoToList(const char* Filename)
 	/* Now that we've allocated memory for the structure, allocate
 	 * memory for the strings and then fill them. */
 	/* Filename first... */
-	LastPhoto->Filename = malloc((sizeof(char) * strlen(Filename)) + 1);
-	strncpy(LastPhoto->Filename, Filename, strlen(Filename) + 1);
+	LastPhoto->Filename = strdup(Filename);
 	/* And then Time, after checking for NULLness. */
 	if (Time)
 	{
-		LastPhoto->Time = malloc((sizeof(char) * strlen(Time)) + 1);
-		strncpy(LastPhoto->Time, Time, strlen(Time));
+		LastPhoto->Time = strdup(Time);
 	} else {
-		LastPhoto->Time = malloc((sizeof(char) * strlen("No EXIF data")) + 1);
-		strncpy(LastPhoto->Time, "No EXIF data", strlen("No EXIF data"));
+		LastPhoto->Time = strdup("No EXIF data");
 	}
 	/* Save the TreeIter as the last step. */
 	LastPhoto->ListPointer = AddStuff;
@@ -983,9 +980,6 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 		 * we should run with the old data. */
 		FreeTrack(&GPSData);
 
-		/* Prepare our "scratch" for rewriting labels. */
-		Scratch = malloc(sizeof(char) * (strlen(FileName) + 100));
-
 		/* Hide the "open" dialog. */
 		gtk_widget_hide(GPSDataDialog);
 
@@ -1003,6 +997,9 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 
 		/* Close the dialog now we're done. */
 		gtk_widget_destroy(ErrorDialog);
+
+		/* Prepare our "scratch" for rewriting labels. */
+		Scratch = malloc(sizeof(char) * (strlen(FileName) + 100));
 
 		/* Check if the data was read ok. */
 		if (ReadOk)
@@ -1080,7 +1077,6 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 
 	/* Assemble the settings for the correlation run. */
 	struct CorrelateOptions Options;
-	char* DatumScratch = NULL;
 
 	/* Interpolation. */
 	/* This is confusing. I should have thought more about the Interpolate
@@ -1129,9 +1125,7 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 	Options.FeatherTime = atof(gtk_entry_get_text(GTK_ENTRY(GapTimeEntry)));
 
 	/* GPS Datum. */
-	DatumScratch = malloc(sizeof(char) * (strlen(gtk_entry_get_text(GTK_ENTRY(GPSDatumEntry))) + 1));
-	strcpy(DatumScratch, gtk_entry_get_text(GTK_ENTRY(GPSDatumEntry)));
-	Options.Datum = DatumScratch;
+	Options.Datum = strdup(gtk_entry_get_text(GTK_ENTRY(GPSDatumEntry)));
 		
 	/* TimeZone. We may need to extract the timezone from a string. */
 	Options.AutoTimeZone = 0; /* TODO: make this selectable in the GUI somehow */
@@ -1240,8 +1234,7 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 		} /* End if Result */
 	} /* End for Walk the list ... */
 
-	/* Free the memory used to shuffle around the Datum. */
-	free(DatumScratch);
+	free(Options.Datum);
 }
 
 void StripGPSButtonPress( GtkWidget *Widget, gpointer Data )

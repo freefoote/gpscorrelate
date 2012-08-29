@@ -274,8 +274,7 @@ int main(int argc, char** argv)
 				/* We only store it here, convert it to numbers later. */
 				if (optarg)
 				{
-					TimeAdjustment = malloc((sizeof(char) * strlen(optarg)) + 1);
-					strncpy(TimeAdjustment, optarg, strlen(optarg)+1);
+					TimeAdjustment = strdup(optarg);
 				}
 				break;
 			case 'O':
@@ -298,8 +297,7 @@ int main(int argc, char** argv)
 				/* This option specifies a Datum, if other than WGS-84. */
 				if (optarg)
 				{
-					Datum = malloc((sizeof(char) * strlen(optarg)) + 1);
-					strncpy(Datum, optarg, strlen(optarg)+1);
+					Datum = strdup(optarg);
 				}
 				break;
 			case 'n':
@@ -425,8 +423,7 @@ int main(int argc, char** argv)
 	/* Set up any other command line options... */
 	if (!Datum)
 	{
-		Datum = malloc((sizeof(char) * strlen("WGS-84")) + 1);
-		strcpy(Datum, "WGS-84");
+		Datum = strdup("WGS-84");
 	}
 	if (TimeAdjustment)
 	{
