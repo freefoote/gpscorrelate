@@ -86,7 +86,6 @@ int main(int argc, char* argv[])
 char* ReadExifDate(const char* File, int* IncludesGPS)
 {
 	// Open and read the file.
-	Exiv2::ExifData ExifRead;
 	Exiv2::Image::AutoPtr Image;
 
 	try {
@@ -105,7 +104,7 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 		return 0;
 	}
 
-	ExifRead = Image->exifData();
+	Exiv2::ExifData &ExifRead = Image->exifData();
 
 	// Read the tag out.
 	Exiv2::Exifdatum& Tag = ExifRead["Exif.Photo.DateTimeOriginal"];
@@ -149,7 +148,6 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 	// much more data than the last, specifically
 	// for display purposes. For the GUI version.
 	// Open and read the file.
-	Exiv2::ExifData ExifRead;
 	Exiv2::Image::AutoPtr Image;
 
 	try {
@@ -168,7 +166,7 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 		return 0;
 	}
 	
-	ExifRead = Image->exifData();
+	Exiv2::ExifData &ExifRead = Image->exifData();
 
 	// Read the tag out.
 	Exiv2::Exifdatum& Tag = ExifRead["Exif.Photo.DateTimeOriginal"];
@@ -288,7 +286,6 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 	// much more data than the last, specifically
 	// for display purposes. For the GUI version.
 	// Open and read the file.
-	Exiv2::ExifData ExifRead;
 	Exiv2::Image::AutoPtr Image;
 
 	try {
@@ -307,7 +304,7 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 		return 0;
 	}
 	
-	ExifRead = Image->exifData();
+	Exiv2::ExifData &ExifRead = Image->exifData();
 
 	// Read the tag out.
 	Exiv2::Exifdatum& Tag = ExifRead["Exif.Photo.DateTimeOriginal"];
