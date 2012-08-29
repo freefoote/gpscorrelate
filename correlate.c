@@ -206,7 +206,7 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 			/* It is between these points.
 			 * Unless told otherwise, we interpolate.
 			 * If not interpolating, we round to nearest.
-			 * If points are eqidistant, we round down. */
+			 * If points are equidistant, we round down. */
 			if (Options->NoInterpolate)
 			{
 				/* No interpolation. Round. */
@@ -301,7 +301,7 @@ void Interpolate(const struct GPSPoint* First, struct GPSPoint* Result,
 	double Scale = (double)First->Next->Time - (double)First->Time;
 	Scale = ((double)PhotoTime - (double)First->Time) / Scale;
 
-	/* Now calculate the Lattitude. */
+	/* Now calculate the Latitude. */
 	Result->Lat = First->Lat + ((First->Next->Lat - First->Lat) * Scale);
 
 	/* And the longitude. */

@@ -339,7 +339,7 @@ GtkWidget* CreateMatchWindow (void)
   DegMinSecsCheck = gtk_check_button_new_with_mnemonic ("Write DD MM SS.SS");
   gtk_widget_show (DegMinSecsCheck);
   gtk_box_pack_start (GTK_BOX (OptionsVBox), DegMinSecsCheck, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, DegMinSecsCheck, "Write the lattitude and longitude values as DD MM SS.SS. This is the new default as of v1.5.3. The old behaviour is to write it as DD MM.MM, which will occur if you uncheck this box.", NULL);
+  gtk_tooltips_set_tip (tooltips, DegMinSecsCheck, "Write the latitude and longitude values as DD MM SS.SS. This is the new default as of v1.5.3. The old behaviour is to write it as DD MM.MM, which will occur if you uncheck this box.", NULL);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (DegMinSecsCheck), g_key_file_get_boolean(GUISettings, "default", "writeddmmss", NULL));
 
   OptionsTable = gtk_table_new (4, 2, FALSE);
@@ -496,7 +496,7 @@ GtkWidget* CreateMatchWindow (void)
   gtk_tree_view_column_set_resizable (FileColumn, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (PhotoList), FileColumn);
 
-  /* Lattitude Column. */
+  /* Latitude Column. */
   LatColumn = gtk_tree_view_column_new_with_attributes ("Latitude", PhotoListRenderer,
 							"text", LIST_LAT,
 							NULL);

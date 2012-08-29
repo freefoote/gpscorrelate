@@ -484,7 +484,7 @@ int main(int argc, char** argv)
 	/* A few variables that we'll require later. */
 	struct GPSPoint* Result;
 	char* File;
-	/* Including stats on what happenned. */
+	/* Including stats on what happened. */
 	int MatchExact = 0;
 	int MatchInter = 0;
 	int MatchRound = 0;
@@ -619,7 +619,7 @@ int main(int argc, char** argv)
 	}
 #endif
 
-	/* Print details of what happenned. */
+	/* Print details of what happened. */
 	printf("\nCompleted correlation process.\n");
 	printf("Matched: %5d (%d Exact, %d Interpolated, %d Rounded).\n",
 			MatchExact + MatchInter + MatchRound,

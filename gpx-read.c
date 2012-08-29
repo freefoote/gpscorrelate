@@ -261,7 +261,7 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 	 * puts in for me... imagine having to write an XML parser!
 	 * Nasty.) */
 	/* Before we go into this function, we also setlocale to "C".
-	 * The GPX def indicates that the decimal seperator should be
+	 * The GPX def indicates that the decimal separator should be
 	 * ".", but certain locales specify otherwise. Which has caused issues.
 	 * So we set the locale for this function, and then revert it.
 	 */

@@ -498,7 +498,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	Value->read(ScratchBuf);
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSAltitude"), Value.get());
 	
-	// LATTITUDE
+	// LATITUDE
 	// Latitude reference: "N" or "S".
 	if (Point->Lat < 0)
 	{
@@ -510,7 +510,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 		// Northern hemisphere.
 		ExifToWrite["Exif.GPSInfo.GPSLatitudeRef"] = "N";
 	}
-	// Now the actual lattitude itself.
+	// Now the actual latitude itself.
 	// The original comment read:
 	// This is done as three rationals.
 	// I choose to do it as:
@@ -539,7 +539,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 		FracPart = ((fabs(Point->Lat) - floor(fabs(Point->Lat))) * 60) - (double)Min; // Grab the fractional minute.
 		Sec = (int)floor(FracPart * 6000); // Convert to seconds.
 		
-		/* printf("New style lattitude: %f -> %ld/%ld/ %ld/100\n", Point->Lat, Deg, Min, Sec); */
+		/* printf("New style latitude: %f -> %ld/%ld/ %ld/100\n", Point->Lat, Deg, Min, Sec); */
 
 		snprintf(ScratchBuf, 100, "%ld/1 %ld/1 %ld/100", Deg, Min, Sec);
 	} else {
@@ -600,7 +600,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	// The timestamp.
 	// Make up the timestamp...
 	// The timestamp is taken as the UTC time of the photo.
-	// If interpolation occured, then this time is the time of the photo.
+	// If interpolation occurred, then this time is the time of the photo.
 	struct tm TimeStamp;
 	TimeStamp.tm_isdst = -1;
 	struct tm *tmp = gmtime(&(Point->Time));
