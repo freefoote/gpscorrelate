@@ -567,8 +567,8 @@ gboolean DestroyWindow(GtkWidget *Widget,
 		Free = FirstPhoto;
 		while (1)
 		{
-			if (Free->Filename) free(Free->Filename);
-			if (Free->Time)     free(Free->Time);
+			free(Free->Filename);
+			free(Free->Time);
 			Free2 = Free->Next;
 			free(Free);
 			if (Free2 == NULL) break;
@@ -725,7 +725,7 @@ void AddPhotoToList(const char* Filename)
 
 	/* Free the memory allocated for us.
 	 * (ReadExifData allocates and returns memory) */
-	if (Time) free(Time);
+	free(Time);
 }
 
 void RemovePhotosButtonPress( GtkWidget *Widget, gpointer Data )
