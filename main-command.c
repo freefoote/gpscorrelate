@@ -91,7 +91,7 @@ static void PrintUsage(const char* ProgramName)
 	       "-O, --photooffset SECS   Offset added to photo time to make it match the GPS\n"
 	       "-h, --help               Display usage/help message\n"
 	       "-v, --verbose            Show more detailed output\n"
-	       "-V, --version            Display version information\n");
+	       "-V, --version            Display version information");
 }
 
 /* Display the information from an existing file. */
