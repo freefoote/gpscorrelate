@@ -119,4 +119,6 @@ v1.X: TBD
 	- Added automatic time zone offset detection by default (the previous
 	behaviour can be selected with "-z 0")
 	- GUI now displays the version number in the title bar
-	- file loading dialogs now have appropriate filters on file extensions
+	- File loading dialogs now have appropriate filters on file extensions
+	- Stop documenting the -p option, which never worked (--degmins hasn't
+	  been touched)

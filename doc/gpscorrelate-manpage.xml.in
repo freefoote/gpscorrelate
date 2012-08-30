@@ -106,7 +106,6 @@
       </group>
       
       <group>
-        <arg choice="plain">-p</arg>
         <arg choice="plain">--degmins</arg>
       </group>
 
@@ -349,7 +348,6 @@
       
       <varlistentry>
         <term>
-          <option>-p</option>,
           <option>--degmins</option>
         </term>
         <listitem>

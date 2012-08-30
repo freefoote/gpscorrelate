@@ -87,7 +87,7 @@ static void PrintUsage(const char* ProgramName)
 	       "-t, --ignore-tracksegs   Interpolate between track segments, too\n"
 	       "-M, --no-mtime           Don't change mtime of modified files\n"
 	       "-f, --fix-datestamps     Fix broken GPS datestamps written with ver. < 1.5.2\n"
-	       "-p, --degmins            Write location as DD MM.MM (was default before v1.5.3)\n"
+	       "    --degmins            Write location as DD MM.MM (was default before v1.5.3)\n"
 	       "-O, --photooffset SECS   Offset added to photo time to make it match the GPS\n"
 	       "-h, --help               Display usage/help message\n"
 	       "-v, --verbose            Show more detailed output\n"
