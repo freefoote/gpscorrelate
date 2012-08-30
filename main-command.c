@@ -110,10 +110,10 @@ static void ShowFileDetails(const char* File, int MachineReadable)
 			 * it machine readable. */
 			if (MachineReadable)
 			{
-				printf("\"%s\",\"%s\",%f,%f,%f\n",
+				printf("\"%s\",\"%s\",%f,%f,%.3f\n",
 					File, Time, Lat, Long, Elev);
 			} else {
-				printf("%s: %s, Lat %f, Long %f, Elevation %f.\n",
+				printf("%s: %s, Lat %f, Long %f, Elevation %.3f.\n",
 					File, Time, Lat, Long, Elev);
 			}
 		} else {

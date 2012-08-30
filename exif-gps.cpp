@@ -47,6 +47,9 @@
 #include "gpsstructure.h"
 #include "exif-gps.h"
 
+#define MAX(a,b) (((a)>(b))?(a):(b))
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
 /* Debug
 int main(int argc, char* argv[])
 {
@@ -369,14 +372,12 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 	return Copy;
 };
 
-void ConvertToRational(double Number,
-			long int* Numerator, long int* Denominator,
-			int Rounding)
+static void ConvertToRational(double Number, int Decimals, char *Buf, int BufSize)
 {
 	// This function converts the given decimal number
 	// to a rational (fractional) number.
 	//
-	// Examples in comments use Number as 25.12345, Rounding as 4.
+	// Examples in comments use Number as 25.12345, Decimals as 4.
 	
 	// Split up the number.
 	double Whole = trunc(Number);
@@ -384,7 +385,7 @@ void ConvertToRational(double Number,
 
 	// Calculate the "number" used for rounding.
 	// This is 10^Digits - ie, 4 places gives us 10000.
-	double Rounder = pow(10, Rounding);
+	double Rounder = pow(10, Decimals);
 
 	// Round the fractional part, and leave the number
 	// as greater than 1.
@@ -426,11 +427,45 @@ void ConvertToRational(double Number,
 	}
 
 	// Copy out the numbers.
-	*Numerator = (int)NumTemp;
-	*Denominator = (int)DenTemp;
+	snprintf(Buf, BufSize, "%ld/%ld", (long)NumTemp, (long)DenTemp);
 
 	// And finished...
 
+}
+
+/* Converts a floating point number with known significant decimal places
+ * into a string representation of a set of latitude or longitude rational
+ * numbers.
+ */
+static void ConvertToLatLongRational(double Number, int Decimals, char *Buf, int BufSize)
+{
+	int Deg, Min, Sec;
+	Deg = (int)floor(fabs(Number)); // Slice off after decimal.
+	Min = (int)floor((fabs(Number) - floor(fabs(Number))) * 60); // Now grab just the minutes.
+	double FracPart = ((fabs(Number) - floor(fabs(Number))) * 60) - (double)Min; // Grab the fractional minute.
+	// Calculate the appropriate denominator based on the number of
+	// significant figures in the original data point. Splitting off the
+	// minutes and integer seconds reduces the number of significant
+	// figures by 3.6 (log10(60*60)), so round it down to 3 in order to
+	// preserve the maximum precision.  Cap it at 9 to avoid overflow
+	// in the EXIF rational data type.
+	int Multiplier = powl(10, MAX(0, MIN(Decimals - 3, 9)));
+	Sec = (int)floor(FracPart * 60 * Multiplier); // Convert to seconds.
+	snprintf(Buf, BufSize, "%d/1 %d/1 %d/%d", Deg, Min, Sec, Multiplier);
+	//printf("New style lat/long: %f -> %d/%d/ %d/%d\n", Number, Deg, Min, Sec, Multiplier);
+}
+
+/* Converts a floating point number into a string representation of a set of
+ * latitude or longitude rational numbers, using the older, not as accurate
+ * style, which nobody should really be using any more.
+ */
+static void ConvertToOldLatLongRational(double Number, char *Buf, int BufSize)
+{
+	int Deg, Min;
+	Deg = (int)floor(fabs(Number)); // Slice off after decimal.
+	Min = (int)floor((fabs(Number) - floor(fabs(Number))) * 6000);
+	snprintf(Buf, BufSize, "%d/1 %d/100 0/1", Deg, Min);
+	//printf("Old style lat/long: %f -> %s\n", Number, Buf);
 }
 
 int WriteGPSData(const char* File, const struct GPSPoint* Point,
@@ -464,9 +499,6 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	Exiv2::ExifData &ExifToWrite = Image->exifData();
 
 	char ScratchBuf[100];
-	long int Nom, Denom;
-	long int Deg, Min, Sec;
-	double FracPart;
 
 	// Do all the easy constant ones first.
 	// GPSVersionID tag: standard says it should be four bytes: 02 00 00 00
@@ -491,8 +523,9 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSAltitudeRef"), Value.get());
 	// And the actual altitude.
 	Value = Exiv2::Value::create(Exiv2::unsignedRational);
-	ConvertToRational(fabs(Point->Elev), &Nom, &Denom, 4);
-	snprintf(ScratchBuf, 100, "%ld/%ld", Nom, Denom);
+	// 3 decimal points is beyond the limit of current GPS technology
+	int Decimals = MIN(Point->ElevDecimals, 3);
+	ConvertToRational(fabs(Point->Elev), Decimals, ScratchBuf, sizeof(ScratchBuf));
 
 	/* printf("Altitude: %f -> %s\n", Point->Elev, ScratchBuf); */
 	Value->read(ScratchBuf);
@@ -525,7 +558,9 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	// as the sign is encoded in LatRef.
 	// Further note: original code did not translate between
 	//   dd.dddddd to dd mm.mm - that's why we now multiply
-	//   by 6000 - x60 to get minutes, x100 to get to mmmm/100.
+	//   by 60*N - x60 to get minutes, xN to get to mmmm/N.
+	//   N is 10^S where S is the number of significant decimal
+	//   places.
 	//
 	// Rereading the EXIF standard, it's quite ok to do DD MM SS.SS
 	// Which is much more accurate. This is the new default, unless otherwise
@@ -534,18 +569,9 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 
 	if (DegMinSecs)
 	{
-		Deg = (int)floor(fabs(Point->Lat)); // Slice off after decimal.
-		Min = (int)floor((fabs(Point->Lat) - floor(fabs(Point->Lat))) * 60); // Now grab just the minutes.
-		FracPart = ((fabs(Point->Lat) - floor(fabs(Point->Lat))) * 60) - (double)Min; // Grab the fractional minute.
-		Sec = (int)floor(FracPart * 6000); // Convert to seconds.
-		
-		/* printf("New style latitude: %f -> %ld/%ld/ %ld/100\n", Point->Lat, Deg, Min, Sec); */
-
-		snprintf(ScratchBuf, 100, "%ld/1 %ld/1 %ld/100", Deg, Min, Sec);
+		ConvertToLatLongRational(Point->Lat, Point->LatDecimals, ScratchBuf, sizeof(ScratchBuf));
 	} else {
-		Deg = (int)floor(fabs(Point->Lat)); // Slice off after decimal.
-		Min = (int)floor((fabs(Point->Lat) - floor(fabs(Point->Lat))) * 6000);
-		snprintf(ScratchBuf, 100, "%ld/1 %ld/100 0/1", Deg, Min);
+		ConvertToOldLatLongRational(Point->Lat, ScratchBuf, sizeof(ScratchBuf));
 	}
 	Value->read(ScratchBuf);
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSLatitude"), Value.get());
@@ -562,37 +588,14 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 		// Eastern hemisphere. Where I live.
 		ExifToWrite["Exif.GPSInfo.GPSLongitudeRef"] = "E";
 	}
-	// Now the actual longitude itself.
-	// This is done as three rationals.
-	// I choose to do it as:
-	//   dd/1 - degrees.
-	//   mmmm/100 - minutes
-	//   0/1 - seconds
-	// Exif standard says you can do it with minutes
-	// as mm/1 and then seconds as ss/1, but its
-	// (slightly) more accurate to do it as
-	//  mmmm/100 than to split it.
-	// We also absolute the value (with fabs())
-	// as the sign is encoded in LongRef.
-	// Further note: original code did not translate between
-	//   dd.dddddd to dd mm.mm - that's why we now multiply
-	//   by 6000 - x60 to get minutes, x100 to get to mmmm/100.
+	// Now the actual longitude itself, in the same way as latitude
 	Value = Exiv2::Value::create(Exiv2::unsignedRational);
 
 	if (DegMinSecs)
 	{
-		Deg = (int)floor(fabs(Point->Long)); // Slice off after decimal.
-		Min = (int)floor((fabs(Point->Long) - floor(fabs(Point->Long))) * 60); // Now grab just the minutes.
-		FracPart = ((fabs(Point->Long) - floor(fabs(Point->Long))) * 60) - (double)Min; // Grab the fractional minute.
-		Sec = (int)floor(FracPart * 6000); // Convert to seconds.
-
-		/* printf("New style longitude: %f -> %ld/%ld/ %ld/100\n", Point->Long, Deg, Min, Sec); */
-
-		snprintf(ScratchBuf, 100, "%ld/1 %ld/1 %ld/100", Deg, Min, Sec);
+		ConvertToLatLongRational(Point->Long, Point->LongDecimals, ScratchBuf, sizeof(ScratchBuf));
 	} else {
-		Deg = (int)floor(fabs(Point->Long)); // Slice off after decimal.
-		Min = (int)floor((fabs(Point->Long) - floor(fabs(Point->Long))) * 6000);
-		snprintf(ScratchBuf, 100, "%ld/1 %ld/100 0/1", Deg, Min);
+		ConvertToOldLatLongRational(Point->Long, ScratchBuf, sizeof(ScratchBuf));
 	}
 	Value->read(ScratchBuf);
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSLongitude"), Value.get());
@@ -619,7 +622,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	}
 
 	Value = Exiv2::Value::create(Exiv2::unsignedRational);
-	snprintf(ScratchBuf, 100, "%d/1 %d/1 %d/1",
+	snprintf(ScratchBuf, sizeof(ScratchBuf), "%d/1 %d/1 %d/1",
 			TimeStamp.tm_hour, TimeStamp.tm_min,
 			TimeStamp.tm_sec);
 	Value->read(ScratchBuf);
@@ -627,7 +630,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 
 	// And we should also do a datestamp.
 	Value = Exiv2::Value::create(Exiv2::unsignedRational);
-	snprintf(ScratchBuf, 100, "%d/1 %d/1 %d/1",
+	snprintf(ScratchBuf, sizeof(ScratchBuf), "%d/1 %d/1 %d/1",
 			TimeStamp.tm_year + 1900,
 			TimeStamp.tm_mon + 1,
 			TimeStamp.tm_mday);

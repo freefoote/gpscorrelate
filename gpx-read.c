@@ -39,6 +39,16 @@
 static struct GPSPoint* FirstPoint;
 static struct GPSPoint* LastPoint;
 
+/* Returns the number of decimal places in the given decimal number string */
+static int NumDecimals(const char *Decimal)
+{
+	const char *Dec = strchr(Decimal, '.');
+	if (Dec) {
+		return strspn(Dec+1,"0123456789");
+	}
+	return 0;
+}
+
 static void ExtractTrackPoints(xmlNodePtr Start)
 {
 	/* The pointer passed to us should be the start
@@ -128,16 +138,22 @@ static void ExtractTrackPoints(xmlNodePtr Start)
 
 			/* Clear the structure first... */
 			LastPoint->Lat = 0;
+			LastPoint->LatDecimals = 0;
 			LastPoint->Long = 0;
+			LastPoint->LongDecimals = 0;
 			LastPoint->Elev = 0;
+			LastPoint->ElevDecimals  = 0;
 			LastPoint->Time = 0;
 			LastPoint->EndOfSegment = 0;
 
 			/* Write the data into LastPoint, which should be a new point. */
 			LastPoint->Lat = atof(Lat);
+			LastPoint->LatDecimals = NumDecimals(Lat);
 			LastPoint->Long = atof(Long);
+			LastPoint->LongDecimals = NumDecimals(Long);
 			if (Elev) {
 				LastPoint->Elev = atof(Elev);
+				LastPoint->ElevDecimals = NumDecimals(Elev);
 			}
 			LastPoint->Time = ConvertToUnixTime(Time, GPX_DATE_FORMAT, 0, 0);
 			
@@ -145,6 +161,7 @@ static void ExtractTrackPoints(xmlNodePtr Start)
 			printf("TrackPoint. Lat %s (%f), Long %s (%f). Elev %s (%f), Time %d.\n",
 					Lat, atof(Lat), Long, atof(Long), Elev, atof(Elev),
 					ConvertToUnixTime(Time, GPX_DATE_FORMAT, 0, 0));
+			printf("Decimals %d %d %d\n", LastPoint->LatDecimals, LastPoint->LongDecimals, LastPoint->ElevDecimals);
 			*/
 			
 					

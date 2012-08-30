@@ -35,6 +35,8 @@
 #include "correlate.h"
 #include "unixtime.h"
 
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
 /* Internal functions used to make it work. */
 static void Round(const struct GPSPoint* First, struct GPSPoint* Result,
 		  time_t PhotoTime);
@@ -190,8 +192,11 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 			/* This is the point, exactly.
 			 * Copy out the data and return that. */
 			Actual->Lat = Search->Lat;
+			Actual->LatDecimals = Search->LatDecimals;
 			Actual->Long = Search->Long;
+			Actual->LongDecimals = Search->LongDecimals;
 			Actual->Elev = Search->Elev;
+			Actual->ElevDecimals = Search->ElevDecimals;
 			Actual->Time = Search->Time;
 
 			Options->Result = CORR_OK;
@@ -280,8 +285,11 @@ void Round(const struct GPSPoint* First, struct GPSPoint* Result,
 
 	/* Copy the numbers over... */
 	Result->Lat = CopyFrom->Lat;
+	Result->LatDecimals = CopyFrom->LatDecimals;
 	Result->Long = CopyFrom->Long;
+	Result->LongDecimals = CopyFrom->LongDecimals;
 	Result->Elev = CopyFrom->Elev;
+	Result->ElevDecimals = CopyFrom->ElevDecimals;
 	Result->Time = CopyFrom->Time;
 
 	/* Done! */
@@ -303,13 +311,16 @@ void Interpolate(const struct GPSPoint* First, struct GPSPoint* Result,
 
 	/* Now calculate the Latitude. */
 	Result->Lat = First->Lat + ((First->Next->Lat - First->Lat) * Scale);
+	Result->LatDecimals = MIN(First->LatDecimals, First->Next->LatDecimals);
 
 	/* And the longitude. */
 	Result->Long = First->Long + ((First->Next->Long - First->Long) * Scale);
+	Result->LongDecimals = MIN(First->LongDecimals, First->Next->LongDecimals);
 
 	/* And the elevation. If elevation wasn't set, it should be zero.
 	 * Which works quite fine for us. */
 	Result->Elev = First->Elev + ((First->Next->Elev - First->Elev) * Scale);
+	Result->ElevDecimals = MIN(First->ElevDecimals, First->Next->ElevDecimals);
 
 	/* The time is not interpolated, but matches photo. */
 	Result->Time = PhotoTime;

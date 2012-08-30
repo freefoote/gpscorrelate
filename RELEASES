@@ -117,8 +117,10 @@ v1.X: TBD
 	- Dan Fandrich took over maintenance of gpscorrelate
 	- Fixed to write GPSTimeStamp tag as unsigned rational, as per spec
 	- Added automatic time zone offset detection by default (the previous
-	behaviour can be selected with "-z 0")
+	  behaviour can be selected with "-z 0")
 	- GUI now displays the version number in the title bar
 	- File loading dialogs now have appropriate filters on file extensions
 	- Stop documenting the -p option, which never worked (--degmins hasn't
 	  been touched)
+	- Store GPS coordinates in such a way as to preserve the number of
+	  significant figures of the original data
