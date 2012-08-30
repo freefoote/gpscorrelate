@@ -289,7 +289,7 @@ GtkWidget* CreateMatchWindow (void)
   SelectGPSButton = gtk_button_new_with_mnemonic ("Choose...");
   gtk_widget_show (SelectGPSButton);
   gtk_box_pack_start (GTK_BOX (GPSDataVBox), SelectGPSButton, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, SelectGPSButton, "Choose GPX file to read GPS data from. If the GPS data is not in the GPX format, use a convertor like GPSBabel to convert it to GPX.", NULL);
+  gtk_tooltips_set_tip (tooltips, SelectGPSButton, "Choose GPX file to read GPS data from. If the GPS data is not in the GPX format, use a converter like GPSBabel to convert it to GPX.", NULL);
   g_signal_connect (G_OBJECT (SelectGPSButton), "clicked",
   		G_CALLBACK (SelectGPSButtonPress), NULL);
 
