@@ -218,7 +218,7 @@ GtkWidget* CreateMatchWindow (void)
   /* Start with the window itself. */
   MatchWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (MatchWindow), "GPS Photo Correlate " PACKAGE_VERSION);
-  gtk_window_set_default_size (GTK_WINDOW (MatchWindow), 700, -1);
+  gtk_window_set_default_size (GTK_WINDOW (MatchWindow), 792, -1);
 
   g_signal_connect (G_OBJECT (MatchWindow), "delete_event",
   		G_CALLBACK (DestroyWindow), NULL);
