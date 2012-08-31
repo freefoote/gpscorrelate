@@ -9,9 +9,13 @@ CXX = g++
 COBJS    = main-command.o unixtime.o gpx-read.o correlate.o exif-gps.o
 GOBJS    = main-gui.o gui.o unixtime.o gpx-read.o correlate.o exif-gps.o
 CFLAGS   = -Wall -O2
-override CFLAGS += $(shell pkg-config --cflags libxml-2.0 gtk+-2.0) -I/usr/include/exiv2
-OFLAGS   = -Wall -O2
-override OFLAGS += $(shell pkg-config --libs libxml-2.0 gtk+-2.0) -lm -lexiv2
+CFLAGSINC := $(shell pkg-config --cflags libxml-2.0 exiv2)
+# Add the gtk+ flags only when building the GUI
+gpscorrelate-gui: CFLAGSINC += $(shell pkg-config --cflags gtk+-2.0)
+LDFLAGS   = -Wall -O2
+LDFLAGSALL := $(shell pkg-config --libs libxml-2.0 exiv2) -lm
+LDFLAGSGUI := $(shell pkg-config --libs gtk+-2.0)
+
 prefix   = /usr/local
 bindir   = $(prefix)/bin
 datadir  = $(prefix)/share
@@ -21,21 +25,24 @@ applicationsdir = $(datadir)/applications
 
 DEFS = -DPACKAGE_VERSION=\"$(PACKAGE_VERSION)\"
 
-TARGETS = gpscorrelate gpscorrelate-gui gpscorrelate.1
+TARGETS = gpscorrelate-gui gpscorrelate gpscorrelate.1
 
 all:	$(TARGETS)
 
 gpscorrelate: $(COBJS)
-	$(CXX) $(OFLAGS) -o $@ $(COBJS)
+	$(CXX) -o $@ $(COBJS) $(LDFLAGS) $(LDFLAGSALL)
 
 gpscorrelate-gui: $(GOBJS)
-	$(CXX) $(OFLAGS) -o $@ $(GOBJS)
+	$(CXX) -o $@ $(GOBJS) $(LDFLAGS) $(LDFLAGSGUI) $(LDFLAGSALL)
 
 .c.o:
-	$(CC) $(CFLAGS) $(DEFS) -c -o $*.o $<
+	$(CC) $(CFLAGS) $(CFLAGSINC) $(DEFS) -c -o $@ $<
 
 .cpp.o:
-	$(CXX) $(CFLAGS) $(DEFS) -c -o $*.o $<
+	$(CXX) $(CFLAGS) $(CFLAGSINC) $(DEFS) -c -o $@ $<
+
+# Hack to recompile everything if a header changes
+*.o: *.h
 
 clean:
 	rm -f *.o gpscorrelate{,.exe} gpscorrelate-gui{,.exe} doc/gpscorrelate-manpage.xml $(TARGETS)

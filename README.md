@@ -34,11 +34,11 @@ So I wrote my own. A little bit of C, a little bit of C++, a shade of GTK+, and 
 To build, you will need:
 
 * The Exiv2 library (C++ EXIF tag handling): http://www.exiv2.org/
-* libxml
-* GTK+ (if compiling the GUI).
+* libxml2 (XML parsing): http://www.xmlsoft.org/
+* GTK+ (if compiling the GUI): http://www.gtk.org
 
 You can build the command line version and the GUI together simply with
-"make". There is presently no "make install".
+"make" and install it with "sudo make install"
 
 ## Release History
 

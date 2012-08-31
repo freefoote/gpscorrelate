@@ -1,4 +1,4 @@
-# Makefile for gpscorrelate
+# Makefile for gpscorrelate for cross-compiling with MinGW32
 # Written by Daniel Foote.
 
 CC       = i486-mingw32-gcc
@@ -18,10 +18,10 @@ gpscorrelate-gui.exe: $(GOBJS)
 	$(CXX) -o $@ $(GOBJS)  $(OFLAGS) 
 
 .c.o:
-	$(CC) $(CFLAGS) -c -o $*.o $<
+	$(CC) $(CFLAGS) -c -o $@ $<
 
 .cpp.o:
-	$(CXX) $(CFLAGS) -c -o $*.o $<
+	$(CXX) $(CFLAGS) -c -o $@ $<
 
 clean:
 	rm -f *.o gpscorrelate{,.exe} gpscorrelate-gui{,.exe}

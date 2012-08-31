@@ -124,3 +124,5 @@ v1.X: TBD
 	  been touched)
 	- Store GPS coordinates in such a way as to preserve the number of
 	  significant figures of the original data
+	- Use pkg-config to get the exiv2 compiler flags when building
+	- Renamed OFLAGS to LDFLAGS which is a more common name
