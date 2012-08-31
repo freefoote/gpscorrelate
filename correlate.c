@@ -61,7 +61,7 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 		 * will appear on the console. Otherwise, we were
 		 * returned here due to the lack of exif tags. */
 		Options->Result = CORR_NOEXIFINPUT;
-		return 0;
+		return NULL;
 	}
 	if (IncludesGPS)
 	{
@@ -69,7 +69,7 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 		 * So we can't do this again... */
 		Options->Result = CORR_GPSDATAEXISTS;
 		free(TimeTemp);
-		return 0;
+		return NULL;
 	}
 	if (Options->AutoTimeZone)
 	{
@@ -118,7 +118,7 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 	{
 		/* Outside the range. Abort. */
 		Options->Result = CORR_NOMATCH;
-		return 0;
+		return NULL;
 	}
 
 	/* Time to run through the list, and see if our PhotoTime

@@ -32,7 +32,7 @@ void AddPhotoToList(const char* Filename);
 void RemovePhotosButtonPress( GtkWidget *Widget, gpointer Data );
 
 void SetListItem(GtkTreeIter* Iter, const char* Filename, char* Time, double Lat,
-		 double Long, double Elev, char* PassedState, int IncludesGPS);
+		 double Long, double Elev, const char* PassedState, int IncludesGPS);
 void SetState(GtkTreeIter* Iter, const char* State);
 
 void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data );

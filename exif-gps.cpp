@@ -95,7 +95,7 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error e) {
 		fprintf(stderr, "Failed to open file %s.\n", File);
-		return 0;
+		return NULL;
 	}
 	Image->readMetadata();
 	if (Image.get() == NULL)
@@ -104,7 +104,7 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 		//	Exiv2::ExifData::strError(Result,
 		//		File).c_str());
 		fprintf(stderr, "Failed to read file %s.\n", File);
-		return 0;
+		return NULL;
 	}
 
 	Exiv2::ExifData &ExifRead = Image->exifData();
@@ -120,12 +120,11 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 		// No date/time stamp.
 		// Not good.
 		// Just return - above us will handle it.
-		return 0;
+		return NULL;
 	}
 
 	// Copy the tag and return that.
-	char* Copy = (char*)malloc((sizeof(char) * Value.length()) + 1);
-	strcpy(Copy, Value.c_str());
+	char* Copy = strdup(Value.c_str());
 	
 	// Check if we have GPS tags.
 	Exiv2::Exifdatum& GPSData = ExifRead["Exif.GPSInfo.GPSVersionID"];
@@ -157,7 +156,7 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error e) {
 		fprintf(stderr, "Failed to open file %s.\n", File);
-		return 0;
+		return NULL;
 	}
 	Image->readMetadata();
 	if (Image.get() == NULL)
@@ -166,7 +165,7 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 		//	Exiv2::ExifData::strError(Result,
 		//		File).c_str());
 		fprintf(stderr, "Unable to open file %s.\n", File);
-		return 0;
+		return NULL;
 	}
 	
 	Exiv2::ExifData &ExifRead = Image->exifData();
@@ -182,12 +181,11 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 		// No date/time stamp.
 		// Not good.
 		// Just return - above us will handle it.
-		return 0;
+		return NULL;
 	}
 
 	// Copy the tag and return that.
-	char* Copy = (char*)malloc((sizeof(char) * Value.length()) + 1);
-	strcpy(Copy, Value.c_str());
+	char* Copy = strdup(Value.c_str());
 	
 	// Check if we have GPS tags.
 	Exiv2::Exifdatum GPSData = ExifRead["Exif.GPSInfo.GPSVersionID"];
@@ -295,7 +293,7 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error e) {
 		fprintf(stderr, "Failed to open file %s.\n", File);
-		return 0;
+		return NULL;
 	}
 	Image->readMetadata();
 	if (Image.get() == NULL)
@@ -304,7 +302,7 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 		//	Exiv2::ExifData::strError(Result,
 		//		File).c_str());
 		fprintf(stderr, "Unable to open file %s.\n", File);
-		return 0;
+		return NULL;
 	}
 	
 	Exiv2::ExifData &ExifRead = Image->exifData();
@@ -320,12 +318,11 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 		// No date/time stamp.
 		// Not good.
 		// Just return - above us will handle it.
-		return 0;
+		return NULL;
 	}
 
 	// Copy the tag and return that.
-	char* Copy = (char*)malloc((sizeof(char) * Value.length()) + 1);
-	strcpy(Copy, Value.c_str());
+	char* Copy = strdup(Value.c_str());
 	
 	// Check if we have GPS tags.
 	Exiv2::Exifdatum& GPSData = ExifRead["Exif.GPSInfo.GPSVersionID"];
@@ -604,10 +601,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	// Make up the timestamp...
 	// The timestamp is taken as the UTC time of the photo.
 	// If interpolation occurred, then this time is the time of the photo.
-	struct tm TimeStamp;
-	TimeStamp.tm_isdst = -1;
-	struct tm *tmp = gmtime(&(Point->Time));
-	memcpy(&TimeStamp, tmp, sizeof(struct tm));
+	struct tm TimeStamp = *gmtime(&(Point->Time));
 	TimeStamp.tm_isdst = -1;
 
 	if (Point->Time != mktime(&TimeStamp)) {
@@ -616,9 +610,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 		// Oh well. Add the difference and try again.
 		// This is a hack.
 		time_t CorrectedTime = Point->Time + (Point->Time - mktime(&TimeStamp));
-
-		struct tm *tmp2 = gmtime(&CorrectedTime);
-		memcpy(&TimeStamp, tmp2, sizeof(struct tm));
+		TimeStamp = *gmtime(&CorrectedTime);
 	}
 
 	Value = Exiv2::Value::create(Exiv2::unsignedRational);
@@ -681,10 +673,7 @@ int WriteFixedDatestamp(const char* File, time_t Time)
 	
 	Exiv2::ExifData &ExifToWrite = Image->exifData();
 	
-	struct tm TimeStamp;
-	TimeStamp.tm_isdst = -1;
-	struct tm *tmp = gmtime(&Time);
-	memcpy(&TimeStamp, tmp, sizeof(struct tm));
+	struct tm TimeStamp = *gmtime(&Time);
 	TimeStamp.tm_isdst = -1;
 
 	if (Time != mktime(&TimeStamp)) {
@@ -693,9 +682,7 @@ int WriteFixedDatestamp(const char* File, time_t Time)
 		// Oh well. Add the difference and try again.
 		// This is a hack.
 		time_t CorrectedTime = Time + (Time - mktime(&TimeStamp));
-
-		struct tm *tmp2 = gmtime(&CorrectedTime);
-		memcpy(&TimeStamp, tmp2, sizeof(struct tm));
+		TimeStamp = *gmtime(&CorrectedTime);
 	}
 
 	char ScratchBuf[100];

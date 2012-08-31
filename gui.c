@@ -137,7 +137,7 @@ struct GUIPhotoList* LastPhoto = NULL;
 
 struct GPSTrack GPSData;
 
-static const char* ConfigDefaults[] = {
+static const char* const ConfigDefaults[] = {
 	"interpolate", "true",
 	"dontwrite", "false",
 	"nochangemtime", "false",
@@ -162,7 +162,7 @@ void LoadSettings(void)
 {
 	/* Generate the filename. */
 	const char* UserHomeDir = g_get_user_config_dir();
-	int FilenameLength = strlen(UserHomeDir) + 30;
+	const int FilenameLength = strlen(UserHomeDir) + 30;
 	SettingsFilename = malloc(sizeof(char) * FilenameLength);
 
 	snprintf(SettingsFilename, FilenameLength, "%s%c.gpscorrelaterc", UserHomeDir, G_DIR_SEPARATOR);
@@ -857,13 +857,13 @@ void RemovePhotosButtonPress( GtkWidget *Widget, gpointer Data )
 }
 
 void SetListItem(GtkTreeIter* Iter, const char* Filename, char* Time, double Lat,
-		double Long, double Elev, char* PassedState, int IncludesGPS)
+		double Long, double Elev, const char* PassedState, int IncludesGPS)
 {
 	/* Scratch areas. */
 	char LatScratch[100] = "";
 	char LongScratch[100] = "";
 	char ElevScratch[100] = "";
-	char* State = NULL;
+	const char* State = NULL;
 	
 	/* Format all the data. */
 	if (!Time)
@@ -937,7 +937,6 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 	GtkWidget *GPSDataDialog;
 	GtkWidget *ErrorDialog;
 	char* FileName;
-	char* Scratch;
 	
 	if (GPXOpenDir == NULL)
 	{
@@ -991,29 +990,29 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 			"Loading GPS data from file... Won't be a moment...");
 		gtk_widget_show(ErrorDialog);
 		GtkGUIUpdate();
-		 
+
 		/* Read in the new data... assuming we can. */
 		int ReadOk = ReadGPX(FileName, &GPSData);
 
-		/* Close the dialog now we're done. */
+		/* Close the dialog now that we're done. */
 		gtk_widget_destroy(ErrorDialog);
 
 		/* Prepare our "scratch" for rewriting labels. */
-		Scratch = malloc(sizeof(char) * (strlen(FileName) + 100));
+		const size_t ScratchLength = strlen(FileName) + 100;
+		char* Scratch = malloc(sizeof(char) * ScratchLength);
 
 		/* Check if the data was read ok. */
 		if (ReadOk)
 		{
 			/* It's all good!
 			 * Adjust the label to say so. */
-			snprintf(Scratch, strlen(FileName)+100, 
-					"Read from: %s", strrchr(FileName, G_DIR_SEPARATOR)+1);
+			snprintf(Scratch, ScratchLength,
+				 "Read from: %s", strrchr(FileName, G_DIR_SEPARATOR)+1);
 			gtk_label_set_text(GTK_LABEL(GPSSelectedLabel), Scratch);
 		} else {
 			/* Not good. Say so. */
 			/* Set the label... */
-			snprintf(Scratch, strlen(FileName)+100, 
-					"Reading from: No file");
+			snprintf(Scratch, ScratchLength, "Reading from: No file");
 			gtk_label_set_text(GTK_LABEL(GPSSelectedLabel), Scratch);
 			/* Show an error dialog. */
 			ErrorDialog = gtk_message_dialog_new (GTK_WINDOW(MatchWindow),
@@ -1155,7 +1154,7 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 	/* Walk through the list, correlating, and updating the screen. */
 	struct GUIPhotoList* Walk;
 	struct GPSPoint* Result;
-	char* State;
+	const char* State = "Internal error";
 	GtkTreePath* ShowPath;
 	for (Walk = FirstPhoto; Walk; Walk = Walk->Next)
 	{

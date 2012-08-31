@@ -201,6 +201,9 @@ static void FindTrackSeg(xmlNodePtr Start)
 /* Determines and stores the min and max times from the GPS track */
 static void GetTrackRange(struct GPSTrack* Track)
 {
+	if (Track->Points == NULL)
+		return;
+
 	/* Requires us to go through the list and keep
 	 * the biggest and smallest. The list should,
 	 * however, be sorted. But we do it this way anyway. */

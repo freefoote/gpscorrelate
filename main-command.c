@@ -172,9 +172,7 @@ static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMi
 		time_t PhotoTime = ConvertToUnixTime(OriginalDateStamp, EXIF_DATE_FORMAT,
 			AdjustmentHours, AdjustmentMinutes);
 		
-		strcpy(CombinedTime, DateStamp);
-		strcat(CombinedTime, " ");
-		strcat(CombinedTime, TimeStamp);
+		snprintf(CombinedTime, sizeof(CombinedTime), "%s %s", DateStamp, TimeStamp);
 
 		time_t GPSTime = ConvertToUnixTime(CombinedTime, EXIF_DATE_FORMAT, 0, 0);
 
@@ -188,10 +186,11 @@ static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMi
 			}
 			char PhotoTimeFormat[100];
 			char GPSTimeFormat[100];
-			char *tmp = ctime(&PhotoTime);
-			strncpy(PhotoTimeFormat, tmp, 100);
-			tmp = ctime(&GPSTime);
-			strncpy(GPSTimeFormat, tmp, 100);
+
+			strftime(PhotoTimeFormat, sizeof(PhotoTimeFormat),
+				 "%a %b %e %T %Y\n", localtime(&PhotoTime));
+			strftime(GPSTimeFormat, sizeof(GPSTimeFormat),
+				 "%a %b %e %T %Y\n", localtime(&GPSTime));
 			printf("%s: Wrong timestamp:\n   Photo:     %s   GPS:       %s   Corrected: %s", 
 					File, PhotoTimeFormat, GPSTimeFormat, PhotoTimeFormat);
 		} else {
