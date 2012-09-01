@@ -115,7 +115,8 @@ v1.6.1: 13 February 2010
 
 v1.X: TBD
 	- Dan Fandrich took over maintenance of gpscorrelate
-	- Fixed to write GPSTimeStamp tag as unsigned rational, as per spec
+	- Now writing GPSTimeStamp tag as unsigned rational, as per spec
+	- Now writing GPSDateStamp tag as ASCII, as per spec
 	- Added automatic time zone offset detection by default (the previous
 	  behaviour can be selected with "-z 0")
 	- GUI now displays the version number in the title bar
@@ -126,3 +127,7 @@ v1.X: TBD
 	  significant figures of the original data
 	- Use pkg-config to get the exiv2 compiler flags when building
 	- Renamed OFLAGS to LDFLAGS which is a more common name
+	- Use presence of the GPSLatitude tag instead of GPSVersionID as an
+	  indicator of the presence of GPS tags (some cameras write
+	  GPSVersionID even when they don't write any GPS location tags)
+
