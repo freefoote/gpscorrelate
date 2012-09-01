@@ -501,8 +501,9 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	Exiv2::Value::AutoPtr Value = Exiv2::Value::create(Exiv2::unsignedByte);
 	Value->read("2 0 0 0");
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSVersionID"), Value.get());
-	// Datum: the datum of the measured data. If not given, we insert WGS-84.
-	ExifToWrite["Exif.GPSInfo.GPSMapDatum"] = Datum;
+	// Datum: the datum of the measured data. The default is WGS-84.
+	if (*Datum)
+		ExifToWrite["Exif.GPSInfo.GPSMapDatum"] = Datum;
 	
 	// Now start adding data.
 	// ALTITUDE.
