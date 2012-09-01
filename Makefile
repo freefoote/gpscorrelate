@@ -16,6 +16,9 @@ LDFLAGS   = -Wall -O2
 LDFLAGSALL := $(shell pkg-config --libs libxml-2.0 exiv2) -lm
 LDFLAGSGUI := $(shell pkg-config --libs gtk+-2.0)
 
+# Put --nonet here to avoid downloading DTDs while building documentation
+XSLTFLAGS =
+
 prefix   = /usr/local
 bindir   = $(prefix)/bin
 datadir  = $(prefix)/share
@@ -63,4 +66,4 @@ doc/gpscorrelate-manpage.xml: doc/gpscorrelate-manpage.xml.in
 	sed -e 's,@DOCDIR@,$(docdir),' -e 's,@PACKAGE_VERSION@,$(PACKAGE_VERSION),' $< > $@
 
 gpscorrelate.1: doc/gpscorrelate-manpage.xml
-	xsltproc http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
+	xsltproc $(XSLTFLAGS) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
