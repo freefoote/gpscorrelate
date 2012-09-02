@@ -496,10 +496,10 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	char ScratchBuf[100];
 
 	// Do all the easy constant ones first.
-	// GPSVersionID tag: standard says it should be four bytes: 02 00 00 00
+	// GPSVersionID tag: standard says it should be four bytes: 02 02 00 00
 	//  (and, must be present).
 	Exiv2::Value::AutoPtr Value = Exiv2::Value::create(Exiv2::unsignedByte);
-	Value->read("2 0 0 0");
+	Value->read("2 2 0 0");
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSVersionID"), Value.get());
 	// Datum: the datum of the measured data. The default is WGS-84.
 	if (*Datum)
