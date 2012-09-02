@@ -25,6 +25,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include <sys/types.h>
+
 #define EXIF_DATE_FORMAT "%d:%d:%d %d:%d:%d"
 #define GPX_DATE_FORMAT "%d-%d-%dT%d:%d:%dZ"
 
