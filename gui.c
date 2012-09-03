@@ -163,7 +163,7 @@ void LoadSettings(void)
 	/* Generate the filename. */
 	const char* UserHomeDir = g_get_user_config_dir();
 	const int FilenameLength = strlen(UserHomeDir) + 30;
-	SettingsFilename = malloc(sizeof(char) * FilenameLength);
+	SettingsFilename = (char*) malloc(sizeof(char) * FilenameLength);
 
 	snprintf(SettingsFilename, FilenameLength, "%s%c.gpscorrelaterc", UserHomeDir, G_DIR_SEPARATOR);
 
@@ -694,12 +694,12 @@ void AddPhotoToList(const char* Filename)
 	if (FirstPhoto)
 	{
 		/* Already at least one element. Add to it. */
-		LastPhoto->Next = malloc(sizeof(struct GUIPhotoList));
+		LastPhoto->Next = (GUIPhotoList*) malloc(sizeof(struct GUIPhotoList));
 		LastPhoto = LastPhoto->Next;
 		LastPhoto->Next = NULL;
 	} else {
 		/* No elements. Righto, add one. */
-		FirstPhoto = malloc(sizeof(struct GUIPhotoList));
+		FirstPhoto = (GUIPhotoList*) malloc(sizeof(struct GUIPhotoList));
 		LastPhoto = FirstPhoto;
 		FirstPhoto->Next = NULL;
 	}
@@ -758,7 +758,7 @@ void RemovePhotosButtonPress( GtkWidget *Widget, gpointer Data )
 
 	/* Now get ready to keep a list of Iters that we can
 	 * delete. */
-	GtkTreeIter* RemoveIters = malloc(sizeof(GtkTreeIter) * SelectedCount);
+	GtkTreeIter* RemoveIters = (GtkTreeIter*) malloc(sizeof(GtkTreeIter) * SelectedCount);
 
 	/* Walk through and remove the items from our internal list. */
 	struct GUIPhotoList* PhotoWalk = NULL;
@@ -769,7 +769,8 @@ void RemovePhotosButtonPress( GtkWidget *Widget, gpointer Data )
 	for (Walk = Selected; Walk; Walk = Walk->next)
 	{
 		/* Acquire a new Iter for this selected row. */
-		if (gtk_tree_model_get_iter(GTK_TREE_MODEL(PhotoListStore), &Iter, Walk->data))
+		if (gtk_tree_model_get_iter(GTK_TREE_MODEL(PhotoListStore), &Iter,
+					    (GtkTreePath*) Walk->data))
 		{
 			/* To remove the row from our internal list.
 			 * Locate it via the pointer stored. */
@@ -856,7 +857,7 @@ void RemovePhotosButtonPress( GtkWidget *Widget, gpointer Data )
 
 }
 
-void SetListItem(GtkTreeIter* Iter, const char* Filename, char* Time, double Lat,
+void SetListItem(GtkTreeIter* Iter, const char* Filename, const char* Time, double Lat,
 		double Long, double Elev, const char* PassedState, int IncludesGPS)
 {
 	/* Scratch areas. */
@@ -984,9 +985,9 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 
 		/* Display a dialog so the user knows whats going down. */
 		ErrorDialog = gtk_message_dialog_new (GTK_WINDOW(MatchWindow),
-			GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL,
+			(GtkDialogFlags) (GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL),
 			GTK_MESSAGE_INFO,
-			0,
+			GTK_BUTTONS_NONE,
 			"Loading GPS data from file... Won't be a moment...");
 		gtk_widget_show(ErrorDialog);
 		GtkGUIUpdate();
@@ -999,7 +1000,7 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 
 		/* Prepare our "scratch" for rewriting labels. */
 		const size_t ScratchLength = strlen(FileName) + 100;
-		char* Scratch = malloc(sizeof(char) * ScratchLength);
+		char* Scratch = (char*) malloc(sizeof(char) * ScratchLength);
 
 		/* Check if the data was read ok. */
 		if (ReadOk)
@@ -1270,7 +1271,8 @@ void StripGPSButtonPress( GtkWidget *Widget, gpointer Data )
 	for (Walk = Selected; Walk; Walk = Walk->next)
 	{
 		/* Get an Iter for this selected row. */
-		if (gtk_tree_model_get_iter(GTK_TREE_MODEL(PhotoListStore), &Iter, Walk->data)) {
+		if (gtk_tree_model_get_iter(GTK_TREE_MODEL(PhotoListStore), &Iter,
+					    (GtkTreePath*) Walk->data)) {
 			/* Fetch out the data... */
 			gtk_tree_model_get(GTK_TREE_MODEL(PhotoListStore), &Iter, LIST_POINTER, &PhotoData, -1);
 		} else {

@@ -125,7 +125,7 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 	 * is in between two points. Alternately, it might be
 	 * exactly on a point... even better... */
 	const struct GPSPoint* Search;
-	struct GPSPoint* Actual = malloc(sizeof(struct GPSPoint));
+	struct GPSPoint* Actual = (struct GPSPoint*) malloc(sizeof(struct GPSPoint));
 
 	Options->Result = CORR_NOMATCH; /* For convenience later */
 	
