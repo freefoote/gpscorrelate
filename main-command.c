@@ -551,7 +551,7 @@ int main(int argc, char** argv)
 			if (ShowDetails)
 			{
 				/* Print out the "point". */
-				printf("Lat %f, Long %f, Elev %f.\n",
+				printf("Lat %f, Long %f, Elev %.3f.\n",
 					Result->Lat, Result->Long,
 					Result->Elev);
 			}
@@ -620,6 +620,12 @@ int main(int argc, char** argv)
 
 	/* Print details of what happened. */
 	printf("\nCompleted correlation process.\n");
+	if (ShowDetails)
+		/* This has to be shown at the end in case auto time zone
+		 * was used, since it isn't known before the first file
+		 * is processed. */
+		printf("Used time zone offset %d:%02d\n",
+		       Options.TimeZoneHours, Options.TimeZoneMins);
 	printf("Matched: %5d (%d Exact, %d Interpolated, %d Rounded).\n",
 			MatchExact + MatchInter + MatchRound,
 			MatchExact, MatchInter, MatchRound);
