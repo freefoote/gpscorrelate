@@ -197,7 +197,12 @@
           <replaceable>file.gpx</replaceable>
         </term>
         <listitem>
-          <para>correlate using the specified GPX file with GPS data</para>
+	  <para>correlate using the specified GPX file with GPS data.
+            This option can be given many times to specify multiple GPX
+            files.  For each photo being correlated, the first file
+            containing a track covering the time the photo was taken
+            will be the one used.
+	  </para>
         </listitem>
     </varlistentry>
 

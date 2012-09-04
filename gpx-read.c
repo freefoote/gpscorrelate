@@ -208,6 +208,7 @@ static void GetTrackRange(struct GPSTrack* Track)
 	 * the biggest and smallest. The list should,
 	 * however, be sorted. But we do it this way anyway. */
 	const struct GPSPoint* Fill = NULL;
+	Track->MaxTime = 0;
 	Track->MinTime = Track->Points->Time;
 	for (Fill = Track->Points; Fill; Fill = Fill->Next)
 	{

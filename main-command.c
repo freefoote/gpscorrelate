@@ -217,8 +217,11 @@ int main(int argc, char** argv)
 	/* But first, some variables to store stuff in. */
 	int c;
 	
-	struct GPSTrack Track = {0,0,0}; /* List of GPS waypoints */
-	int HaveTimeAdjustment = 0;  /* Whether -z option was given */
+	struct GPSTrack* Track = NULL;/* Array of lists of GPS waypoints. The
+					 final entry of all 0 signals the end. */
+	int NumTracks = 0;	     /* Number of track structures at Track,
+					not including the terminating entry. */
+	int HaveTimeAdjustment = 0;  /* Whether -z option was given. */
 	int TimeZoneHours = 0;       /* Integer version of the timezone. */
 	int TimeZoneMins = 0;
 	char* Datum = NULL;          /* Datum of input GPS data. */
@@ -236,6 +239,14 @@ int main(int argc, char** argv)
 	int PhotoOffset = 0;
 	int HaveTrack = 0;
 
+	/* Create the empty terminating array entry */
+	Track = (struct GPSTrack*) calloc(1, sizeof(*Track));
+	if (!Track)
+	{
+		printf("Out of memory\n");
+		exit(EXIT_FAILURE);
+	}
+
 	while (1)
 	{
 		/* Call getopt to do all the hard work
@@ -250,19 +261,28 @@ int main(int argc, char** argv)
 		{
 			case 'g':
 				/* This parameter specifies the GPS data.
-				 * It must be present. */
-				if (optarg && !HaveTrack)
+				 * It must be present at least once. */
+				if (optarg)
 				{
 					/* Read the XML file into memory and extract the "points". */
-					/* The returned pointer is the start of a singly-linked list. */
 					printf("Reading GPS Data...");
 					fflush(stdout);
-					HaveTrack = ReadGPX(optarg, &Track);
+					HaveTrack = ReadGPX(optarg, &Track[NumTracks]);
 					printf("\n");
 					if (!HaveTrack)
 					{
 						exit(EXIT_FAILURE);
 					}
+
+					/* Make room for a new end-of-array entry */
+					++NumTracks;
+					Track = (struct GPSTrack*) realloc(Track, sizeof(*Track)*(NumTracks+1));
+					if (!Track)
+					{
+						printf("Out of memory\n");
+						exit(EXIT_FAILURE);
+					}
+					memset(&Track[NumTracks], 0, sizeof(*Track));
 				}
 				break;
 			case 'z':
@@ -637,7 +657,12 @@ int main(int argc, char** argv)
 
 
 	/* Clean up! */
-	FreeTrack(&Track);
+	while (NumTracks > 0)
+	{
+		--NumTracks;
+		FreeTrack(&Track[NumTracks]);
+	}
+	free(Track);
 	free(Datum);
 	
 	return 0;

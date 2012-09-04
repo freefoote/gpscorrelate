@@ -106,17 +106,25 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 	 * be freed for us. */
 	free(TimeTemp);
 
-	/* Check that the photo is within the times that
-	 * our tracks are for. Can't really match it if
-	 * we were not logging when it was taken. */
-	/* Note: photos taken between logging sessions of the
-	 * same file will still make it inside of this. In
-	 * some cases, it won't matter, but if it does, then
-	 * keep this in mind!! */
-	if ((PhotoTime < Options->Track.MinTime) ||
-			(PhotoTime > Options->Track.MaxTime))
+	/* Search the list of GPS tracks to find one containing the range
+	 * we're interested in. Options points to an array with the last
+	 * entry denoted by a NULL Points pointer. */
+	int TrackNum;
+	for (TrackNum = 0; Options->Track[TrackNum].Points; ++TrackNum)
 	{
-		/* Outside the range. Abort. */
+		/* Check that the photo is within the times that
+		 * our tracks are for. Can't really match it if
+		 * we were not logging when it was taken.
+		 * Note: photos taken between logging sessions of the
+		 * same file will still make it inside of this. In
+		 * some cases, it won't matter, but if it does, then
+		 * keep this in mind!! */
+		if ((PhotoTime >= Options->Track[TrackNum].MinTime) &&
+		    (PhotoTime <= Options->Track[TrackNum].MaxTime))
+			break;
+	}
+	if (!Options->Track[TrackNum].Points) {
+		/* All tracks were outside the time range. Abort. */
 		Options->Result = CORR_NOMATCH;
 		return NULL;
 	}
@@ -129,7 +137,7 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 
 	Options->Result = CORR_NOMATCH; /* For convenience later */
 	
-	for (Search = Options->Track.Points; Search; Search = Search->Next)
+	for (Search = Options->Track[TrackNum].Points; Search; Search = Search->Next)
 	{
 		/* Sanity check: we need to peek at the next point.
 		 * Make sure we can. */

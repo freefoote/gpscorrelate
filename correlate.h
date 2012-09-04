@@ -45,7 +45,8 @@ struct CorrelateOptions {
 			    to make it match GPS time. In seconds. 
 			    This is (GPS - Photo) */
 
-	struct GPSTrack Track; /* Points to use... */
+	struct GPSTrack *Track; /* Pointer to array of tracks to use. The last
+				   track must be entirely zeros. */
 };
 
 /* Return codes in order:

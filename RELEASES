@@ -131,4 +131,6 @@ v1.6.2git: TBD
 	  indicator of the presence of GPS tags (some cameras write
 	  GPSVersionID even when they don't write any GPS location tags)
 	- Don't record a GPSMapDatum tag if the string is blank
+	- The -g option can be used multiple times to specify multiple GPX files
+	- GUI now allows multiple GPX files to be selected
 
