@@ -694,12 +694,12 @@ void AddPhotoToList(const char* Filename)
 	if (FirstPhoto)
 	{
 		/* Already at least one element. Add to it. */
-		LastPhoto->Next = (GUIPhotoList*) malloc(sizeof(struct GUIPhotoList));
+		LastPhoto->Next = (struct GUIPhotoList*) malloc(sizeof(struct GUIPhotoList));
 		LastPhoto = LastPhoto->Next;
 		LastPhoto->Next = NULL;
 	} else {
 		/* No elements. Righto, add one. */
-		FirstPhoto = (GUIPhotoList*) malloc(sizeof(struct GUIPhotoList));
+		FirstPhoto = (struct GUIPhotoList*) malloc(sizeof(struct GUIPhotoList));
 		LastPhoto = FirstPhoto;
 		FirstPhoto->Next = NULL;
 	}
