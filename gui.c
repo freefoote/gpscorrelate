@@ -651,10 +651,7 @@ void AddPhotosButtonPress( GtkWidget *Widget, gpointer Data )
 	}
 
 	/* Copy out the directory that the user ended up at. */
-	if (PhotoOpenDir)
-	{
-		g_free(PhotoOpenDir);
-	}
+	g_free(PhotoOpenDir);
 	PhotoOpenDir = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(AddPhotosDialog));
 
 	/* Now we're done with the dialog. See you! */
@@ -1032,10 +1029,7 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 	}
 
 	/* Make a note of the directory we stopped at. */
-	if (GPXOpenDir)
-	{
-		g_free(GPXOpenDir);
-	}
+	g_free(GPXOpenDir);
 	GPXOpenDir = gtk_file_chooser_get_current_folder(GTK_FILE_CHOOSER(GPSDataDialog));
 	
 	/* Now we're finished with the dialog... free it. */
