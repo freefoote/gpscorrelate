@@ -48,7 +48,7 @@ gpscorrelate-gui: $(GOBJS)
 *.o: *.h
 
 clean:
-	rm -f *.o gpscorrelate{,.exe} gpscorrelate-gui{,.exe} doc/gpscorrelate-manpage.xml $(TARGETS)
+	rm -f *.o gpscorrelate{,.exe} gpscorrelate-gui{,.exe} doc/gpscorrelate-manpage.xml gpscorrelate.html $(TARGETS)
 
 install: all
 	install -d $(DESTDIR)$(bindir)
@@ -67,3 +67,6 @@ doc/gpscorrelate-manpage.xml: doc/gpscorrelate-manpage.xml.in
 
 gpscorrelate.1: doc/gpscorrelate-manpage.xml
 	xsltproc $(XSLTFLAGS) http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl $<
+
+gpscorrelate.html: doc/gpscorrelate-manpage.xml
+	xsltproc $(XSLTFLAGS) http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl $< > $@
