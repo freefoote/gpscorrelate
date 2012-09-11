@@ -187,6 +187,10 @@ void LoadSettings(void)
 
 		i += 2;
 	}
+
+	/* Fetch the directory settings from the file. */
+	PhotoOpenDir = g_key_file_get_value(GUISettings, "default", "photoopendir", NULL);
+	GPXOpenDir = g_key_file_get_value(GUISettings, "default", "gpxopendir", NULL);
 }
 
 void SaveSettings(void)
@@ -593,12 +597,6 @@ void AddPhotosButtonPress( GtkWidget *Widget, gpointer Data )
 	GtkWidget *AddPhotosDialog;
 	GSList* FileNames;
 
-	if (PhotoOpenDir == NULL)
-	{
-		/* First load - fetch the settings from the file. */
-		PhotoOpenDir = g_key_file_get_value(GUISettings, "default", "photoopendir", NULL);
-	}
-
 	/* Get the dialog ready. */
 	AddPhotosDialog = gtk_file_chooser_dialog_new ("Add Photos...",
 			GTK_WINDOW(MatchWindow),
@@ -936,12 +934,6 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 	GtkWidget *ErrorDialog;
 	char* FileName;
 	
-	if (GPXOpenDir == NULL)
-	{
-		/* First load - fetch the settings from the file. */
-		GPXOpenDir = g_key_file_get_value(GUISettings, "default", "gpxopendir", NULL);
-	}
-
 	/* Get the dialog ready... */
 	GPSDataDialog = gtk_file_chooser_dialog_new ("Select GPS Data...",
 			GTK_WINDOW(MatchWindow),
