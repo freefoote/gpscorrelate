@@ -1323,4 +1323,4 @@ void GtkGUIUpdate(void)
 	 * but generally, it's a good thing. */
 	while (gtk_events_pending ())
 		gtk_main_iteration ();
-};
+}

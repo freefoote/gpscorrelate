@@ -73,5 +73,5 @@ time_t ConvertToUnixTime(const char* StringTime, const char* Format,
 
 	/* Calculate and return the unix time. */
 	return mktime(&Time);
-};
+}
 

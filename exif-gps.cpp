@@ -140,7 +140,7 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 
 	// Now return, passing a pointer to the date string.
 	return Copy; // Its up to the caller to free this.
-};
+}
 
 char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, int* IncludesGPS)
 {
@@ -275,7 +275,7 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 
 	// Now return, passing a pointer to the date string.
 	return Copy; // Its up to the caller to free this.
-};
+}
 
 // This function is for the --fix-datestamp option.
 // DateStamp and TimeStamp should be 12-char strings.
@@ -365,7 +365,7 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 	}
 
 	return Copy;
-};
+}
 
 static void ConvertToRational(double Number, int Decimals, char *Buf, int BufSize)
 {
@@ -639,7 +639,7 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 
 	return 1;
 	
-};
+}
 
 int WriteFixedDatestamp(const char* File, time_t Time)
 {

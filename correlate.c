@@ -258,7 +258,7 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 	 * and return nothing. */
 	free(Actual);
 	return NULL;
-};
+}
 
 void Round(const struct GPSPoint* First, struct GPSPoint* Result,
 	   time_t PhotoTime)

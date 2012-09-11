@@ -306,7 +306,7 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 	GetTrackRange(Track);
 
 	return 1;
-};
+}
 
 
 void FreeTrack(struct GPSTrack* Track)
@@ -323,4 +323,4 @@ void FreeTrack(struct GPSTrack* Track)
 		CurrentFree = NextFree;
 	}
 	Track->Points = NULL;
-};
+}
