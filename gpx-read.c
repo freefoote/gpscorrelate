@@ -31,6 +31,7 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#include "i18n.h"
 #include "gpx-read.h"
 #include "unixtime.h"
 #include "gpsstructure.h"
@@ -237,7 +238,7 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 	
 	if (GPXData == NULL)
 	{
-		fprintf(stderr, "Failed to parse GPX data from %s.\n", File);
+		fprintf(stderr, _("Failed to parse GPX data from %s.\n"), File);
 		return 0;
 	}
 
@@ -247,7 +248,7 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 
 	if (GPXRoot == NULL)
 	{
-		fprintf(stderr, "GPX file has no root. Not healthy.\n");
+		fprintf(stderr, _("GPX file has no root. Not healthy.\n"));
 		return 0;
 	}
 
@@ -258,7 +259,7 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 		/* Ok, it is a GPX file. */
 	} else {
 		/* Not valid. */
-		fprintf(stderr, "Invalid GPX file.\n");
+		fprintf(stderr, _("Invalid GPX file.\n"));
 		return 0;
 	}
 

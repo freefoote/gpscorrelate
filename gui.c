@@ -41,6 +41,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtk.h>
 
+#include "i18n.h"
 #include "gpsstructure.h"
 #include "gui.h"
 #include "exif-gps.h"
@@ -222,7 +223,9 @@ GtkWidget* CreateMatchWindow (void)
 
   /* Start with the window itself. */
   MatchWindow = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-  gtk_window_set_title (GTK_WINDOW (MatchWindow), "GPS Photo Correlate " PACKAGE_VERSION);
+  char title[40];
+  snprintf(title, sizeof(title), _("GPS Photo Correlate %s"), PACKAGE_VERSION);
+  gtk_window_set_title (GTK_WINDOW (MatchWindow), title);
   gtk_window_set_default_size (GTK_WINDOW (MatchWindow), 792, -1);
 
   g_signal_connect (G_OBJECT (MatchWindow), "delete_event",
@@ -251,21 +254,21 @@ GtkWidget* CreateMatchWindow (void)
   gtk_widget_show (AddPhotosVBox);
   gtk_container_add (GTK_CONTAINER (AddPhotosAlignment), AddPhotosVBox);
 
-  PhotoAddButton = gtk_button_new_with_mnemonic ("Add...");
+  PhotoAddButton = gtk_button_new_with_mnemonic (_("Add..."));
   gtk_widget_show (PhotoAddButton);
   gtk_box_pack_start (GTK_BOX (AddPhotosVBox), PhotoAddButton, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, PhotoAddButton, "Add photos to be correlated.", NULL);
+  gtk_tooltips_set_tip (tooltips, PhotoAddButton, _("Add photos to be correlated."), NULL);
   g_signal_connect (G_OBJECT (PhotoAddButton), "clicked",
   		G_CALLBACK (AddPhotosButtonPress), NULL);
 
-  PhotoRemoveButton = gtk_button_new_with_mnemonic ("Remove");
+  PhotoRemoveButton = gtk_button_new_with_mnemonic (_("Remove"));
   gtk_widget_show (PhotoRemoveButton);
   gtk_box_pack_start (GTK_BOX (AddPhotosVBox), PhotoRemoveButton, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, PhotoRemoveButton, "Remove selected photos from the list.", NULL);
+  gtk_tooltips_set_tip (tooltips, PhotoRemoveButton, _("Remove selected photos from the list."), NULL);
   g_signal_connect (G_OBJECT (PhotoRemoveButton), "clicked",
   		G_CALLBACK (RemovePhotosButtonPress), NULL);
 
-  AddPhotosLabel = gtk_label_new ("<b>1. Add Photos</b>");
+  AddPhotosLabel = gtk_label_new (_("<b>1. Add Photos</b>"));
   gtk_widget_show (AddPhotosLabel);
   gtk_frame_set_label_widget (GTK_FRAME (AddPhotosFrame), AddPhotosLabel);
   gtk_label_set_use_markup (GTK_LABEL (AddPhotosLabel), TRUE);
@@ -284,21 +287,23 @@ GtkWidget* CreateMatchWindow (void)
   gtk_widget_show (GPSDataVBox);
   gtk_container_add (GTK_CONTAINER (GPSDataAlignment), GPSDataVBox);
 
-  GPSSelectedLabel = gtk_label_new ("Reading From: No file");  /* FIX ME: Label not appropriately sized/placed for data. */
+  GPSSelectedLabel = gtk_label_new (_("Reading from: No file"));  /* FIX ME: Label not appropriately sized/placed for data. */
   gtk_widget_show (GPSSelectedLabel);
   gtk_box_pack_start (GTK_BOX (GPSDataVBox), GPSSelectedLabel, FALSE, FALSE, 0);
   gtk_label_set_ellipsize(GTK_LABEL(GPSSelectedLabel), PANGO_ELLIPSIZE_END); 
   /*gtk_label_set_width_chars(GTK_LABEL(GPSSelectedLabel), 20);
   gtk_label_set_line_wrap(GTK_LABEL(GPSSelectedLabel), TRUE);*/
 
-  SelectGPSButton = gtk_button_new_with_mnemonic ("Choose...");
+  SelectGPSButton = gtk_button_new_with_mnemonic (_("Choose..."));
   gtk_widget_show (SelectGPSButton);
   gtk_box_pack_start (GTK_BOX (GPSDataVBox), SelectGPSButton, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, SelectGPSButton, "Choose GPX file to read GPS data from. If the GPS data is not in the GPX format, use a converter like GPSBabel to convert it to GPX.", NULL);
+  gtk_tooltips_set_tip (tooltips, SelectGPSButton,
+	_("Choose GPX file to read GPS data from. If the GPS data is not in the "
+	  "GPX format, use a converter like GPSBabel to convert it to GPX."), NULL);
   g_signal_connect (G_OBJECT (SelectGPSButton), "clicked",
   		G_CALLBACK (SelectGPSButtonPress), NULL);
 
-  GPSDataLabel = gtk_label_new ("<b>2. GPS Data</b>");
+  GPSDataLabel = gtk_label_new (_("<b>2. GPS Data</b>"));
   gtk_widget_show (GPSDataLabel);
   gtk_frame_set_label_widget (GTK_FRAME (GPSDataFrame), GPSDataLabel);
   gtk_label_set_use_markup (GTK_LABEL (GPSDataLabel), TRUE);
@@ -317,62 +322,71 @@ GtkWidget* CreateMatchWindow (void)
   gtk_widget_show (OptionsVBox);
   gtk_container_add (GTK_CONTAINER (OptionsAlignment), OptionsVBox);
 
-  InterpolateCheck = gtk_check_button_new_with_mnemonic ("Interpolate");
+  InterpolateCheck = gtk_check_button_new_with_mnemonic (_("Interpolate"));
   gtk_widget_show (InterpolateCheck);
   gtk_box_pack_start (GTK_BOX (OptionsVBox), InterpolateCheck, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, InterpolateCheck, "Interpolate between points. If disabled, points will be rounded to the nearest recorded point.", NULL);
+  gtk_tooltips_set_tip (tooltips, InterpolateCheck,
+	_("Interpolate between points. If disabled, points will be rounded to "
+	  "the nearest recorded point."), NULL);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (InterpolateCheck), g_key_file_get_boolean(GUISettings, "default", "interpolate", NULL));
 
-  NoWriteCheck = gtk_check_button_new_with_mnemonic ("Don't write");
+  NoWriteCheck = gtk_check_button_new_with_mnemonic (_("Don't write"));
   gtk_widget_show (NoWriteCheck);
   gtk_box_pack_start (GTK_BOX (OptionsVBox), NoWriteCheck, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, NoWriteCheck, "Don't write EXIF data back to the photos.", NULL);
+  gtk_tooltips_set_tip (tooltips, NoWriteCheck, _("Don't write EXIF data back to the photos."), NULL);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (NoWriteCheck), g_key_file_get_boolean(GUISettings, "default", "dontwrite", NULL));
 
-  NoMtimeCheck = gtk_check_button_new_with_mnemonic ("Don't change mtime");
+  NoMtimeCheck = gtk_check_button_new_with_mnemonic (_("Don't change mtime"));
   gtk_widget_show (NoMtimeCheck);
   gtk_box_pack_start (GTK_BOX (OptionsVBox), NoMtimeCheck, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, NoMtimeCheck, "Don't change file modification time of the photos.", NULL);
+  gtk_tooltips_set_tip (tooltips, NoMtimeCheck,
+	_("Don't change file modification time of the photos."), NULL);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (NoMtimeCheck), g_key_file_get_boolean(GUISettings, "default", "nochangemtime", NULL));
 
-  BetweenSegmentsCheck = gtk_check_button_new_with_mnemonic ("Between Segments");
+  BetweenSegmentsCheck = gtk_check_button_new_with_mnemonic (_("Between Segments"));
   gtk_widget_show (BetweenSegmentsCheck);
   gtk_box_pack_start (GTK_BOX (OptionsVBox), BetweenSegmentsCheck, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, BetweenSegmentsCheck, "Interpolate between track segments. Generally the data is segmented to show where data was available and not available, but you might still want to interpolate between segments.", NULL);
+  gtk_tooltips_set_tip (tooltips, BetweenSegmentsCheck,
+	_("Interpolate between track segments. Generally the data is segmented "
+	  "to show where data was available and not available, but you might "
+	  "still want to interpolate between segments."), NULL);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (BetweenSegmentsCheck), g_key_file_get_boolean(GUISettings, "default", "betweensegments", NULL));
 
-  DegMinSecsCheck = gtk_check_button_new_with_mnemonic ("Write DD MM SS.SS");
+  DegMinSecsCheck = gtk_check_button_new_with_mnemonic (_("Write DD MM SS.SS"));
   gtk_widget_show (DegMinSecsCheck);
   gtk_box_pack_start (GTK_BOX (OptionsVBox), DegMinSecsCheck, FALSE, FALSE, 0);
-  gtk_tooltips_set_tip (tooltips, DegMinSecsCheck, "Write the latitude and longitude values as DD MM SS.SS. This is the new default as of v1.5.3. The old behaviour is to write it as DD MM.MM, which will occur if you uncheck this box.", NULL);
+  gtk_tooltips_set_tip (tooltips, DegMinSecsCheck,
+	_("Write the latitude and longitude values as DD MM SS.SS. This is "
+	  "the new default as of v1.5.3. The old behaviour is to write it as "
+	  "DD MM.MM, which will occur if you uncheck this box."), NULL);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (DegMinSecsCheck), g_key_file_get_boolean(GUISettings, "default", "writeddmmss", NULL));
 
   OptionsTable = gtk_table_new (4, 2, FALSE);
   gtk_widget_show (OptionsTable);
   gtk_box_pack_start (GTK_BOX (OptionsVBox), OptionsTable, TRUE, TRUE, 0);
 
-  MaxGapTimeLabel = gtk_label_new ("Max gap time:");
+  MaxGapTimeLabel = gtk_label_new (_("Max gap time:"));
   gtk_widget_show (MaxGapTimeLabel);
   gtk_table_attach (GTK_TABLE (OptionsTable), MaxGapTimeLabel, 0, 1, 0, 1,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (MaxGapTimeLabel), 0, 0.5);
 
-  TimeZoneLabel = gtk_label_new ("Time Zone:");
+  TimeZoneLabel = gtk_label_new (_("Time Zone:"));
   gtk_widget_show (TimeZoneLabel);
   gtk_table_attach (GTK_TABLE (OptionsTable), TimeZoneLabel, 0, 1, 1, 2,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (TimeZoneLabel), 0, 0.5);
   
-  PhotoOffsetLabel = gtk_label_new ("Photo Offset:");
+  PhotoOffsetLabel = gtk_label_new (_("Photo Offset:"));
   gtk_widget_show (PhotoOffsetLabel);
   gtk_table_attach (GTK_TABLE (OptionsTable), PhotoOffsetLabel, 0, 1, 2, 3,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_misc_set_alignment (GTK_MISC (PhotoOffsetLabel), 0, 0.5);
 
-  GPSDatumLabel = gtk_label_new ("GPS Datum:");
+  GPSDatumLabel = gtk_label_new (_("GPS Datum:"));
   gtk_widget_show (GPSDatumLabel);
   gtk_table_attach (GTK_TABLE (OptionsTable), GPSDatumLabel, 0, 1, 4, 5,
                     (GtkAttachOptions) (GTK_FILL),
@@ -384,7 +398,10 @@ GtkWidget* CreateMatchWindow (void)
   gtk_table_attach (GTK_TABLE (OptionsTable), GapTimeEntry, 1, 2, 0, 1,
                     (GtkAttachOptions) (0),
                     (GtkAttachOptions) (0), 0, 0);
-  gtk_tooltips_set_tip (tooltips, GapTimeEntry, "Maximum time \"away\" from a point that the photo will be matched, in seconds. If a photos time is outside this value from any point, it will not be matched.", NULL);
+  gtk_tooltips_set_tip (tooltips, GapTimeEntry,
+	_("Maximum time \"away\" from a point that the photo will be matched, "
+	  "in seconds. If a photos time is outside this value from any point, "
+	  "it will not be matched."), NULL);
   gtk_entry_set_text (GTK_ENTRY (GapTimeEntry), g_key_file_get_value(GUISettings, "default", "maxgap", NULL));
   gtk_entry_set_width_chars (GTK_ENTRY (GapTimeEntry), 7);
 
@@ -393,7 +410,11 @@ GtkWidget* CreateMatchWindow (void)
   gtk_table_attach (GTK_TABLE (OptionsTable), TimeZoneEntry, 1, 2, 1, 2,
                     (GtkAttachOptions) (0),
                     (GtkAttachOptions) (0), 0, 0);
-  gtk_tooltips_set_tip (tooltips, TimeZoneEntry, "The timezone that the cameras time was set to when the photos were taken. For example, if a camera is set to AWST or +8:00 hours. Enter +8:00 here so that the correct adjustment to the photos time can be made. GPS data is always in UTC.", NULL);
+  gtk_tooltips_set_tip (tooltips, TimeZoneEntry,
+	_("The timezone that the cameras time was set to when the photos were "
+	  "taken. For example, if a camera is set to AWST or +8:00 hours. "
+	  "Enter +8:00 here so that the correct adjustment to the photos time "
+	  "can be made. GPS data is always in UTC."), NULL);
   gtk_entry_set_text (GTK_ENTRY (TimeZoneEntry), g_key_file_get_value(GUISettings, "default", "timezone", NULL));
   gtk_entry_set_width_chars (GTK_ENTRY (TimeZoneEntry), 7);
   
@@ -402,7 +423,10 @@ GtkWidget* CreateMatchWindow (void)
   gtk_table_attach (GTK_TABLE (OptionsTable), PhotoOffsetEntry, 1, 2, 2, 3,
                     (GtkAttachOptions) (0),
                     (GtkAttachOptions) (0), 0, 0);
-  gtk_tooltips_set_tip (tooltips, PhotoOffsetEntry, "The number of seconds to ADD to the photos time to make it match the GPS data. Calculate this with (GPS - Photo). Can be negative or positive.", NULL);
+  gtk_tooltips_set_tip (tooltips, PhotoOffsetEntry,
+	_("The number of seconds to ADD to the photos time to make it match "
+	  "the GPS data. Calculate this with (GPS - Photo). "
+	  "Can be negative or positive."), NULL);
   gtk_entry_set_text (GTK_ENTRY (PhotoOffsetEntry), g_key_file_get_value(GUISettings, "default", "photooffset", NULL));
   gtk_entry_set_width_chars (GTK_ENTRY (PhotoOffsetEntry), 7);
 
@@ -411,11 +435,13 @@ GtkWidget* CreateMatchWindow (void)
   gtk_table_attach (GTK_TABLE (OptionsTable), GPSDatumEntry, 1, 2, 4, 5,
                     (GtkAttachOptions) (0),
                     (GtkAttachOptions) (0), 0, 0);
-  gtk_tooltips_set_tip (tooltips, GPSDatumEntry, "The datum used for the GPS data. This text here is recorded in the EXIF tags as the source datum. WGS-84 is very commonly used.", NULL);
+  gtk_tooltips_set_tip (tooltips, GPSDatumEntry,
+	_("The datum used for the GPS data. This text here is recorded in the "
+	  "EXIF tags as the source datum. WGS-84 is very commonly used."), NULL);
   gtk_entry_set_text (GTK_ENTRY (GPSDatumEntry), g_key_file_get_value(GUISettings, "default", "gpsdatum", NULL));
   gtk_entry_set_width_chars (GTK_ENTRY (GPSDatumEntry), 7);
 
-  OptionsFrameLable = gtk_label_new ("<b>3. Set options</b>");
+  OptionsFrameLable = gtk_label_new (_("<b>3. Set options</b>"));
   gtk_widget_show (OptionsFrameLable);
   gtk_frame_set_label_widget (GTK_FRAME (OptionsFrame), OptionsFrameLable);
   gtk_label_set_use_markup (GTK_LABEL (OptionsFrameLable), TRUE);
@@ -430,14 +456,16 @@ GtkWidget* CreateMatchWindow (void)
   gtk_container_add (GTK_CONTAINER (CorrelateFrame), CorrelateAlignment);
   gtk_alignment_set_padding (GTK_ALIGNMENT (CorrelateAlignment), 0, 4, 12, 4);
 
-  CorrelateButton = gtk_button_new_with_mnemonic ("Correlate Photos");
+  CorrelateButton = gtk_button_new_with_mnemonic (_("Correlate Photos"));
   gtk_widget_show (CorrelateButton);
   gtk_container_add (GTK_CONTAINER (CorrelateAlignment), CorrelateButton);
-  gtk_tooltips_set_tip (tooltips, CorrelateButton, "Begin the correlation process, writing back to the photos if not disabled.", NULL);
+  gtk_tooltips_set_tip (tooltips, CorrelateButton,
+	_("Begin the correlation process, writing back to the photos "
+	  "if not disabled."), NULL);
   g_signal_connect (G_OBJECT (CorrelateButton), "clicked",
   		G_CALLBACK (CorrelateButtonPress), NULL);
 
-  CorrelateLabel = gtk_label_new ("<b>4. Correlate!</b>");
+  CorrelateLabel = gtk_label_new (_("<b>4. Correlate!</b>"));
   gtk_widget_show (CorrelateLabel);
   gtk_frame_set_label_widget (GTK_FRAME (CorrelateFrame), CorrelateLabel);
   gtk_label_set_use_markup (GTK_LABEL (CorrelateLabel), TRUE);
@@ -452,14 +480,15 @@ GtkWidget* CreateMatchWindow (void)
   gtk_container_add (GTK_CONTAINER (OtherOptionsFrame), OtherOptionsAlignment);
   gtk_alignment_set_padding (GTK_ALIGNMENT (OtherOptionsAlignment), 0, 4, 12, 4);
 
-  StripGPSButton = gtk_button_new_with_mnemonic ("Strip GPS tags");
+  StripGPSButton = gtk_button_new_with_mnemonic (_("Strip GPS tags"));
   gtk_widget_show (StripGPSButton);
   gtk_container_add (GTK_CONTAINER (OtherOptionsAlignment), StripGPSButton);
-  gtk_tooltips_set_tip (tooltips, StripGPSButton, "Strip GPS tags from the selected photos.", NULL);
+  gtk_tooltips_set_tip (tooltips, StripGPSButton,
+	_("Strip GPS tags from the selected photos."), NULL);
   g_signal_connect (G_OBJECT (StripGPSButton), "clicked",
   		G_CALLBACK (StripGPSButtonPress), NULL);
 
-  OtherOptionsLabel = gtk_label_new ("<b>Other Tools</b>");
+  OtherOptionsLabel = gtk_label_new (_("<b>Other Tools</b>"));
   gtk_widget_show (OtherOptionsLabel);
   gtk_frame_set_label_widget (GTK_FRAME (OtherOptionsFrame), OtherOptionsLabel);
   gtk_label_set_use_markup (GTK_LABEL (OtherOptionsLabel), TRUE);
@@ -495,42 +524,42 @@ GtkWidget* CreateMatchWindow (void)
   PhotoListRenderer = gtk_cell_renderer_text_new ();
 
   /* File Column. */
-  FileColumn = gtk_tree_view_column_new_with_attributes ("File", PhotoListRenderer,
+  FileColumn = gtk_tree_view_column_new_with_attributes (_("File"), PhotoListRenderer,
 							"text", LIST_FILENAME,
 							NULL);
   gtk_tree_view_column_set_resizable (FileColumn, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (PhotoList), FileColumn);
 
   /* Latitude Column. */
-  LatColumn = gtk_tree_view_column_new_with_attributes ("Latitude", PhotoListRenderer,
+  LatColumn = gtk_tree_view_column_new_with_attributes (_("Latitude"), PhotoListRenderer,
 							"text", LIST_LAT,
 							NULL);
   gtk_tree_view_column_set_resizable (LatColumn, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (PhotoList), LatColumn);
   
   /* Longitude Column. */
-  LongColumn = gtk_tree_view_column_new_with_attributes ("Longitude", PhotoListRenderer,
+  LongColumn = gtk_tree_view_column_new_with_attributes (_("Longitude"), PhotoListRenderer,
 							"text", LIST_LONG,
 							NULL);
   gtk_tree_view_column_set_resizable (LongColumn, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (PhotoList), LongColumn);
   
   /* Elevation Column. */
-  ElevColumn = gtk_tree_view_column_new_with_attributes ("Elevation", PhotoListRenderer,
+  ElevColumn = gtk_tree_view_column_new_with_attributes (_("Elevation"), PhotoListRenderer,
 							"text", LIST_ELEV,
 							NULL);
   gtk_tree_view_column_set_resizable (ElevColumn, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (PhotoList), ElevColumn);
   
   /* Time column. */
-  TimeColumn = gtk_tree_view_column_new_with_attributes ("Time", PhotoListRenderer,
+  TimeColumn = gtk_tree_view_column_new_with_attributes (_("Time"), PhotoListRenderer,
 							"text", LIST_TIME,
 							NULL);
   gtk_tree_view_column_set_resizable (TimeColumn, TRUE);
   gtk_tree_view_append_column (GTK_TREE_VIEW (PhotoList), TimeColumn);
 
   /* State column. */
-  StateColumn = gtk_tree_view_column_new_with_attributes ("State", PhotoListRenderer,
+  StateColumn = gtk_tree_view_column_new_with_attributes (_("State"), PhotoListRenderer,
 							"text", LIST_STATE,
 							NULL);
   gtk_tree_view_column_set_resizable (StateColumn, TRUE);
@@ -608,7 +637,7 @@ void AddPhotosButtonPress( GtkWidget *Widget, gpointer Data )
 	GtkWidget *AddPhotosDialog;
 
 	/* Get the dialog ready. */
-	AddPhotosDialog = gtk_file_chooser_dialog_new ("Add Photos...",
+	AddPhotosDialog = gtk_file_chooser_dialog_new (_("Add Photos..."),
 			GTK_WINDOW(MatchWindow),
 			GTK_FILE_CHOOSER_ACTION_OPEN,
 			GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -621,13 +650,13 @@ void AddPhotosButtonPress( GtkWidget *Widget, gpointer Data )
 	if (JpgFilter) {
 		gtk_file_filter_add_pattern(JpgFilter, "*.[jJ][pP][gG]");
 		gtk_file_filter_add_pattern(JpgFilter, "*.[jJ][pP][eE][gG]");
-		gtk_file_filter_set_name(JpgFilter, "JPEG images");
+		gtk_file_filter_set_name(JpgFilter, _("JPEG images"));
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(AddPhotosDialog), JpgFilter);
 	}
 	GtkFileFilter *AllFilter = gtk_file_filter_new();
 	if (AllFilter) {
 		gtk_file_filter_add_pattern(AllFilter, "*");
-		gtk_file_filter_set_name(AllFilter, "All files");
+		gtk_file_filter_set_name(AllFilter, _("All files"));
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(AddPhotosDialog), AllFilter);
 	}
 
@@ -718,7 +747,7 @@ void AddPhotoToList(const char* Filename)
 	{
 		LastPhoto->Time = strdup(Time);
 	} else {
-		LastPhoto->Time = strdup("No EXIF data");
+		LastPhoto->Time = strdup(_("No EXIF data"));
 	}
 	/* Save the TreeIter as the last step. */
 	LastPhoto->ListPointer = AddStuff;
@@ -876,12 +905,12 @@ void SetListItem(GtkTreeIter* Iter, const char* Filename, const char* Time, doub
 	{
 		/* Not good. Failure. */
 		Time = "";
-		State = "No EXIF data";
+		State = _("No EXIF data");
 	} else {
 		/* All ok. Get ready. */
 		if (IncludesGPS)
 		{
-			State = "GPS Data Present";
+			State = _("GPS Data Present");
 			/* In each case below, consider the values
 			 * that are invalid for each - if that's the case,
 			 * consider the spots as "blank". */
@@ -910,7 +939,7 @@ void SetListItem(GtkTreeIter* Iter, const char* Filename, const char* Time, doub
 			}
 		} else {
 			/* Placeholders for the lack of data. */
-			State = "Ready";
+			State = _("Ready");
 		}
 	}
 
@@ -944,7 +973,7 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 	GtkWidget *ErrorDialog;
 	
 	/* Get the dialog ready... */
-	GPSDataDialog = gtk_file_chooser_dialog_new ("Select GPS Data...",
+	GPSDataDialog = gtk_file_chooser_dialog_new (_("Select GPS Data..."),
 			GTK_WINDOW(MatchWindow),
 			GTK_FILE_CHOOSER_ACTION_OPEN,
 			GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
@@ -957,13 +986,13 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 	GtkFileFilter *GpxFilter = gtk_file_filter_new();
 	if (GpxFilter) {
 		gtk_file_filter_add_pattern(GpxFilter, "*.[gG][pP][xX]");
-		gtk_file_filter_set_name(GpxFilter, "GPX files");
+		gtk_file_filter_set_name(GpxFilter, _("GPX files"));
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(GPSDataDialog), GpxFilter);
 	}
 	GtkFileFilter *AllFilter = gtk_file_filter_new();
 	if (AllFilter) {
 		gtk_file_filter_add_pattern(AllFilter, "*");
-		gtk_file_filter_set_name(AllFilter, "All files");
+		gtk_file_filter_set_name(AllFilter, _("All files"));
 		gtk_file_chooser_add_filter(GTK_FILE_CHOOSER(GPSDataDialog), AllFilter);
 	}
 
@@ -987,7 +1016,7 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 			(GtkDialogFlags) (GTK_DIALOG_DESTROY_WITH_PARENT | GTK_DIALOG_MODAL),
 			GTK_MESSAGE_INFO,
 			GTK_BUTTONS_NONE,
-			"Loading GPS data from file... Won't be a moment...");
+			_("Loading GPS data from file... Won't be a moment..."));
 		gtk_widget_show(ErrorDialog);
 		GtkGUIUpdate();
 
@@ -1013,7 +1042,7 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 					/* If more than one file is given, say so */
 					free(FirstOrBadFileName);
 					/* This string must look like a file path */
-					FirstOrBadFileName = strdup(G_DIR_SEPARATOR_S "multiple files");
+					FirstOrBadFileName = strdup(_(G_DIR_SEPARATOR_S "multiple files"));
 				}
 
 				ReadOk = ReadGPX((char*)Run->data, &GPSData[NumTracks]);
@@ -1051,19 +1080,19 @@ void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data )
 			/* It's all good!
 			 * Adjust the label to say so. */
 			snprintf(Scratch, ScratchLength,
-				 "Read from: %s", strrchr(FirstOrBadFileName, G_DIR_SEPARATOR)+1);
+				 _("Read from: %s"), strrchr(FirstOrBadFileName, G_DIR_SEPARATOR)+1);
 			gtk_label_set_text(GTK_LABEL(GPSSelectedLabel), Scratch);
 		} else {
 			/* Not good. Say so. */
 			/* Set the label... */
-			snprintf(Scratch, ScratchLength, "Reading from: No file");
+			snprintf(Scratch, ScratchLength, _("Reading from: No file"));
 			gtk_label_set_text(GTK_LABEL(GPSSelectedLabel), Scratch);
 			/* Show an error dialog. */
 			ErrorDialog = gtk_message_dialog_new (GTK_WINDOW(MatchWindow),
 					GTK_DIALOG_DESTROY_WITH_PARENT,
 					GTK_MESSAGE_ERROR,
 					GTK_BUTTONS_CLOSE,
-					"Unable to read file %s for some reason. Please try again",
+					_("Unable to read file %s for some reason. Please try again"),
 					FirstOrBadFileName);
 			gtk_dialog_run (GTK_DIALOG (ErrorDialog));
 			gtk_widget_destroy (ErrorDialog);
@@ -1103,7 +1132,7 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 				GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_MESSAGE_ERROR,
 				GTK_BUTTONS_CLOSE,
-				"No photos selected to match! Please add photos with first!");
+				_("No photos selected to match! Please add photos with first!"));
 		gtk_dialog_run (GTK_DIALOG (ErrorDialog));
 		gtk_widget_destroy (ErrorDialog);
 		return;
@@ -1116,7 +1145,7 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 				GTK_DIALOG_DESTROY_WITH_PARENT,
 				GTK_MESSAGE_ERROR,
 				GTK_BUTTONS_CLOSE,
-				"No GPS data loaded! Please select a file to read GPS data from.");
+				_("No GPS data loaded! Please select a file to read GPS data from."));
 		gtk_dialog_run (GTK_DIALOG (ErrorDialog));
 		gtk_widget_destroy (ErrorDialog);
 		return;
@@ -1202,12 +1231,12 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 	/* Walk through the list, correlating, and updating the screen. */
 	struct GUIPhotoList* Walk;
 	struct GPSPoint* Result;
-	const char* State = "Internal error";
+	const char* State = _("Internal error");
 	GtkTreePath* ShowPath;
 	for (Walk = FirstPhoto; Walk; Walk = Walk->Next)
 	{
 		/* Say that we're doing it... */
-		SetState(&Walk->ListPointer, "Correlating...");
+		SetState(&Walk->ListPointer, _("Correlating..."));
 
 		/* Point to the cell, too... ie, scroll the tree view
 		 * to ensure that the one we're playing with can be seen on screen. */
@@ -1230,19 +1259,19 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 			{
 				case CORR_OK:
 					/* All cool! Exact match! */
-					State = "Exact Match";
+					State = _("Exact Match");
 					break;
 				case CORR_INTERPOLATED:
 					/* All cool! Interpolated match. */
-					State = "Interpolated Match";
+					State = _("Interpolated Match");
 					break;
 				case CORR_ROUND:
 					/* All cool! Rounded match. */
-					State = "Rounded Match";
+					State = _("Rounded Match");
 					break;
 				case CORR_EXIFWRITEFAIL:
 					/* Not cool - matched, not written. */
-					State = "Write Failure";
+					State = _("Write Failure");
 					break;
 			}
 			/* Now update the screen with the numbers. */
@@ -1256,22 +1285,22 @@ void CorrelateButtonPress( GtkWidget *Widget, gpointer Data )
 			if (Options.Result == CORR_GPSDATAEXISTS)
 			{
 				/* Do nothing... */
-				SetState(&Walk->ListPointer, "Data Already Present");
+				SetState(&Walk->ListPointer, _("Data Already Present"));
 				continue;
 			}
 			switch (Options.Result)
 			{
 				case CORR_NOMATCH:
 					/* No match: outside data. */
-					State = "No Match";
+					State = _("No Match");
 					break;
 				case CORR_TOOFAR:
 					/* Too far from any point. */
-					State = "Too far";
+					State = _("Too far");
 					break;
 				case CORR_NOEXIFINPUT:
 					/* No exif data input. */
-					State = "No data";
+					State = _("No data");
 					break;
 			}
 			/* Now update the screen with the changed state. */
@@ -1329,7 +1358,7 @@ void StripGPSButtonPress( GtkWidget *Widget, gpointer Data )
 		}
 
 		/* Say that we're doing it... */
-		SetState(&PhotoData->ListPointer, "Stripping...");
+		SetState(&PhotoData->ListPointer, _("Stripping..."));
 
 		/* Point to the cell, too... ie, scroll the tree view
 		 * to ensure that the one we're playing with can be seen on screen. */
@@ -1346,7 +1375,7 @@ void StripGPSButtonPress( GtkWidget *Widget, gpointer Data )
 				PhotoData->Time, 200, 200, -7000000, "", 1);
 		} else {
 			SetListItem(&PhotoData->ListPointer, PhotoData->Filename,
-				PhotoData->Time, 200, 200, -7000000, "Error Stripping", 1);
+				PhotoData->Time, 200, 200, -7000000, _("Error Stripping"), 1);
 		}
 
 	} /* End for Walk the GList. */

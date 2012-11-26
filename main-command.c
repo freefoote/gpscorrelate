@@ -31,11 +31,13 @@
 #include <time.h>
 #include <getopt.h>
 #include <string.h>
+#include <locale.h>
 
 #ifndef WIN32
   #include <termios.h>
 #endif
 
+#include "i18n.h"
 #include "gpsstructure.h"
 #include "exif-gps.h"
 #include "unixtime.h"
@@ -67,31 +69,31 @@ static const struct option program_options[] = {
 /* Function to print the version - near the top for easy modification. */
 static void PrintVersion(const char* ProgramName)
 {
-	printf("%s, ver. " PACKAGE_VERSION ". Daniel Foote, 2005-2010. GNU GPL.\n", ProgramName);
+	printf(_("%s, ver. %s. Daniel Foote, et. al. 2005-2012. GNU GPL.\n"), ProgramName, PACKAGE_VERSION);
 }
 
 /* Function to print the usage info. */
 static void PrintUsage(const char* ProgramName)
 {
-	printf("Usage: %s -g|--gps file.gpx [options] file1.jpg ...\n", ProgramName);
-	puts(  "-g, --gps file.gpx       Specifies GPX file with GPS data (required)\n"
-	       "-z, --timeadd +/-HH[:MM] Time to add to GPS data to make it match photos\n"
-	       "-i, --no-interpolation   Disable interpolation between points; interpolation\n"
-	       "                         is linear, points rounded if disabled\n"
-	       "-d, --datum DATUM        Specify measurement datum (defaults to WGS-84)\n"
-	       "-n, --no-write           Do not write the EXIF data. Useful with --verbose\n"
-	       "-m, --max-dist SECS      Max time outside points that photo will be matched\n"
-	       "-s, --show               Just show the GPS data from the given files\n"
-	       "-o, --machine            Similar to --show but with machine-readable output\n"
-	       "-r, --remove             Strip GPS tags from the given files\n"
-	       "-t, --ignore-tracksegs   Interpolate between track segments, too\n"
-	       "-M, --no-mtime           Don't change mtime of modified files\n"
-	       "-f, --fix-datestamps     Fix broken GPS datestamps written with ver. < 1.5.2\n"
-	       "    --degmins            Write location as DD MM.MM (was default before v1.5.3)\n"
-	       "-O, --photooffset SECS   Offset added to photo time to make it match the GPS\n"
-	       "-h, --help               Display usage/help message\n"
-	       "-v, --verbose            Show more detailed output\n"
-	       "-V, --version            Display version information");
+	printf(_("Usage: %s -g|--gps file.gpx [options] file1.jpg ...\n"), ProgramName);
+	puts(  _("-g, --gps file.gpx       Specifies GPX file with GPS data (required)"));
+	puts(  _("-z, --timeadd +/-HH[:MM] Time to add to GPS data to make it match photos"));
+	puts(  _("-i, --no-interpolation   Disable interpolation between points; interpolation\n"
+	         "                         is linear, points rounded if disabled"));
+	puts(  _("-d, --datum DATUM        Specify measurement datum (defaults to WGS-84)"));
+	puts(  _("-n, --no-write           Do not write the EXIF data. Useful with --verbose"));
+	puts(  _("-m, --max-dist SECS      Max time outside points that photo will be matched"));
+	puts(  _("-s, --show               Just show the GPS data from the given files"));
+	puts(  _("-o, --machine            Similar to --show but with machine-readable output"));
+	puts(  _("-r, --remove             Strip GPS tags from the given files"));
+	puts(  _("-t, --ignore-tracksegs   Interpolate between track segments, too"));
+	puts(  _("-M, --no-mtime           Don't change mtime of modified files"));
+	puts(  _("-f, --fix-datestamps     Fix broken GPS datestamps written with ver. < 1.5.2"));
+	puts(  _("    --degmins            Write location as DD MM.MM (was default before v1.5.3)"));
+	puts(  _("-O, --photooffset SECS   Offset added to photo time to make it match the GPS"));
+	puts(  _("-h, --help               Display usage/help message"));
+	puts(  _("-v, --verbose            Show more detailed output"));
+	puts(  _("-V, --version            Display version information"));
 }
 
 /* Display the information from an existing file. */
@@ -113,7 +115,7 @@ static void ShowFileDetails(const char* File, int MachineReadable)
 				printf("\"%s\",\"%s\",%f,%f,%.3f\n",
 					File, Time, Lat, Long, Elev);
 			} else {
-				printf("%s: %s, Lat %f, Long %f, Elevation %.3f.\n",
+				printf(_("%s: %s, Lat %f, Long %f, Elevation %.3f.\n"),
 					File, Time, Lat, Long, Elev);
 			}
 		} else {
@@ -121,7 +123,7 @@ static void ShowFileDetails(const char* File, int MachineReadable)
 			 * readable data and there is no data. */
 			if (!MachineReadable)
 			{
-				printf("%s: %s, No GPS Data.\n",
+				printf(_("%s: %s, No GPS Data.\n"),
 					File, Time);
 			}
 		}
@@ -130,7 +132,7 @@ static void ShowFileDetails(const char* File, int MachineReadable)
 		 * machine readable output */
 		if (!MachineReadable)
 		{
-			printf("%s: No EXIF data.\n", File);
+			printf(_("%s: No EXIF data.\n"), File);
 		}
 	}
 
@@ -143,9 +145,9 @@ static void RemoveGPSTags(const char* File, int NoChangeMtime)
 {
 	if (RemoveGPSExif(File, NoChangeMtime))
 	{
-		printf("%s: Removed GPS tags.\n", File);
+		printf(_("%s: Removed GPS tags.\n"), File);
 	} else {
-		printf("%s: Tag removal failure.\n", File);
+		printf(_("%s: Tag removal failure.\n"), File);
 	}
 }
 
@@ -164,9 +166,9 @@ static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMi
 
 	if (OriginalDateStamp == NULL)
 	{
-		printf("%s: No EXIF data.\n", File);
+		printf(_("%s: No EXIF data.\n"), File);
 	} else if (IncludesGPS == 0) {
-		printf("%s: No GPS data.\n", File);
+		printf(_("%s: No GPS data.\n"), File);
 	} else {
 		/* Check the timestamp. */
 		time_t PhotoTime = ConvertToUnixTime(OriginalDateStamp, EXIF_DATE_FORMAT,
@@ -191,12 +193,12 @@ static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMi
 				 "%a %b %e %T %Y\n", localtime(&PhotoTime));
 			strftime(GPSTimeFormat, sizeof(GPSTimeFormat),
 				 "%a %b %e %T %Y\n", localtime(&GPSTime));
-			printf("%s: Wrong timestamp:\n   Photo:     %s   GPS:       %s   Corrected: %s", 
+			printf(_("%s: Wrong timestamp:\n   Photo:     %s   GPS:       %s   Corrected: %s"),
 					File, PhotoTimeFormat, GPSTimeFormat, PhotoTimeFormat);
 		} else {
 			/* Inside the range. Do nothing! */
-			printf("%s: Timestamp is OK: Photo %s (localtime), GPS %s (UTC).\n", File,
-					OriginalDateStamp, CombinedTime);
+			printf(_("%s: Timestamp is OK: Photo %s (localtime), GPS %s (UTC).\n"),
+			       File, OriginalDateStamp, CombinedTime);
 		}
 	}
 
@@ -205,6 +207,10 @@ static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMi
 
 int main(int argc, char** argv)
 {
+	/* Initialize gettext */
+	setlocale (LC_MESSAGES, "");
+	textdomain("gpscorrelate");
+
 	/* If you didn't pass any arguments... */
 	if (argc == 1)
 	{
@@ -243,7 +249,7 @@ int main(int argc, char** argv)
 	Track = (struct GPSTrack*) calloc(1, sizeof(*Track));
 	if (!Track)
 	{
-		printf("Out of memory\n");
+		printf(_("Out of memory\n"));
 		exit(EXIT_FAILURE);
 	}
 
@@ -265,7 +271,7 @@ int main(int argc, char** argv)
 				if (optarg)
 				{
 					/* Read the XML file into memory and extract the "points". */
-					printf("Reading GPS Data...");
+					printf(_("Reading GPS Data..."));
 					fflush(stdout);
 					HaveTrack = ReadGPX(optarg, &Track[NumTracks]);
 					printf("\n");
@@ -279,7 +285,7 @@ int main(int argc, char** argv)
 					Track = (struct GPSTrack*) realloc(Track, sizeof(*Track)*(NumTracks+1));
 					if (!Track)
 					{
-						printf("Out of memory\n");
+						printf(_("Out of memory\n"));
 						exit(EXIT_FAILURE);
 					}
 					memset(&Track[NumTracks], 0, sizeof(*Track));
@@ -316,7 +322,7 @@ int main(int argc, char** argv)
 			case 'v':
 				/* This option asks us to show more info. */
 #ifdef WIN32
-				printf("--verbose does not work on win32\n");
+				printf(_("--verbose does not work on Windows\n"));
 #else
 				PrintVersion(argv[0]);
 				ShowDetails = 1;
@@ -378,7 +384,7 @@ int main(int argc, char** argv)
 			case '?':
 				/* Unrecognised option. Or, missing argument. */
 				/* We should inform the user and let them correct this. */
-				printf("Next time, please pass a parameter with that!\n");
+				printf(_("Next time, please pass a parameter with that!\n"));
 				exit(EXIT_FAILURE);
 				break;
 			default:
@@ -395,7 +401,7 @@ int main(int argc, char** argv)
 		/* You passed some files. Handy! */
 	} else {
 		/* Hmm. It seems there were no other files... that doesn't work. */
-		printf("Nice try! However, next time, pass a few JPEG files to match!\n");
+		printf(_("Nice try! However, next time, pass a few JPEG files to match!\n"));
 		exit(EXIT_SUCCESS);
 	}
 
@@ -426,7 +432,7 @@ int main(int argc, char** argv)
 	{
 		if (!HaveTimeAdjustment)
 		{
-			printf("You must give a time adjustment for the photos with -z to fix photos.\n");
+			printf(_("You must give a time adjustment for the photos with -z to fix photos.\n"));
 			exit(EXIT_SUCCESS);
 		}
 		
@@ -449,7 +455,7 @@ int main(int argc, char** argv)
 		/* Tell the user we are bailing.
 		 * Not really required, seeing as ReadGPX should
 		 * inform the user anyway... but, doesn't hurt! */
-		printf("Cannot continue since no GPS data is available.\n");
+		printf(_("Cannot continue since no GPS data is available.\n"));
 		exit(EXIT_FAILURE);
 	}
 
@@ -457,8 +463,8 @@ int main(int argc, char** argv)
 	 * If we're not being verbose. Otherwise, this would be pointless. */
 	if (!ShowDetails)
 	{
-		printf("Legend: . = Ok, / = Interpolated, < = Rounded, - = No match, ^ = Too far.\n");
-		printf("        w = Write Fail, ? = No EXIF date, ! = GPS already present.\n");
+		printf(_("Legend: . = Ok, / = Interpolated, < = Rounded, - = No match, ^ = Too far.\n"
+			 "        w = Write Fail, ? = No EXIF date, ! = GPS already present.\n"));
 	}
 
 	/* Set up our options structure for the correlation function. */
@@ -491,13 +497,13 @@ int main(int argc, char** argv)
 		new_settings.c_lflag &= ~ISIG;
 		if(tcsetattr(fileno(stdout), TCSANOW, &new_settings) != 0) {
 			/* Oops. Oh well. Didn't work. */
-			printf("Debug: Broken tty set.\n");
+			printf(_("Debug: Broken tty set.\n"));
 		}
 	}
 #endif
 
 	/* Make it all look nice and pretty... so the user knows what's going on. */
-	printf("\nCorrelate: ");
+	printf(_("\nCorrelate: "));
 	if (ShowDetails) printf("\n");
 	
 	/* A few variables that we'll require later. */
@@ -533,7 +539,7 @@ int main(int argc, char** argv)
 				MatchExact++;
 				if (ShowDetails)
 				{
-					printf("%s: Exact match: ", File);
+					printf(_("%s: Exact match: "), File);
 				} else {
 					printf(".");
 				}
@@ -543,7 +549,7 @@ int main(int argc, char** argv)
 				MatchInter++;
 				if (ShowDetails)
 				{
-					printf("%s: Interpolated: ", File);
+					printf(_("%s: Interpolated: "), File);
 				} else {
 					printf("/");
 				}
@@ -553,7 +559,7 @@ int main(int argc, char** argv)
 				MatchRound++;
 				if (ShowDetails)
 				{
-					printf("%s: Rounded: ", File);
+					printf(_("%s: Rounded: "), File);
 				} else {
 					printf("<");
 				}
@@ -563,7 +569,7 @@ int main(int argc, char** argv)
 				WriteFail++;
 				if (ShowDetails)
 				{
-					printf("%s: Exif write failure: ", File);
+					printf(_("%s: Exif write failure: "), File);
 				} else {
 					printf("w");
 				}
@@ -571,7 +577,7 @@ int main(int argc, char** argv)
 			if (ShowDetails)
 			{
 				/* Print out the "point". */
-				printf("Lat %f, Long %f, Elev %.3f.\n",
+				printf(_("Lat %f, Long %f, Elev %.3f.\n"),
 					Result->Lat, Result->Long,
 					Result->Elev);
 			}
@@ -584,7 +590,7 @@ int main(int argc, char** argv)
 				NotMatched++;
 				if (ShowDetails)
 				{
-					printf("%s: No match.\n", File);
+					printf(_("%s: No match.\n"), File);
 				} else {
 					printf("-");
 				}
@@ -594,7 +600,7 @@ int main(int argc, char** argv)
 				TooFar++;
 				if (ShowDetails)
 				{
-					printf("%s: Too far from nearest point.\n", File);
+					printf(_("%s: Too far from nearest point.\n"), File);
 				} else {
 					printf("^");
 				}
@@ -604,7 +610,7 @@ int main(int argc, char** argv)
 				NoDate++;
 				if (ShowDetails)
 				{
-					printf("%s: No date exif tag present.\n", File);
+					printf(_("%s: No date exif tag present.\n"), File);
 				} else {
 					printf("?");
 				}
@@ -614,7 +620,7 @@ int main(int argc, char** argv)
 				GPSPresent++;
 				if (ShowDetails)
 				{
-					printf("%s: GPS Data already present.\n", File);
+					printf(_("%s: GPS Data already present.\n"), File);
 				} else {
 					printf("!");
 				}
@@ -639,20 +645,20 @@ int main(int argc, char** argv)
 #endif
 
 	/* Print details of what happened. */
-	printf("\nCompleted correlation process.\n");
+	printf(_("\nCompleted correlation process.\n"));
 	if (ShowDetails)
 		/* This has to be shown at the end in case auto time zone
 		 * was used, since it isn't known before the first file
 		 * is processed. */
-		printf("Used time zone offset %d:%02d\n",
+		printf(_("Used time zone offset %d:%02d\n"),
 		       Options.TimeZoneHours, Options.TimeZoneMins);
-	printf("Matched: %5d (%d Exact, %d Interpolated, %d Rounded).\n",
+	printf(_("Matched: %5d (%d Exact, %d Interpolated, %d Rounded).\n"),
 			MatchExact + MatchInter + MatchRound,
 			MatchExact, MatchInter, MatchRound);
-	printf("Failed:  %5d (%d Not matched, %d Write failure, %d Too Far,\n",
+	printf(_("Failed:  %5d (%d Not matched, %d Write failure, %d Too Far,\n"),
 			NotMatched + WriteFail + TooFar + NoDate + GPSPresent,
 			NotMatched, WriteFail, TooFar);
-	printf("                %d No Date, %d GPS Already Present.)\n",
+	printf(_("                %d No Date, %d GPS Already Present.)\n"),
 			NoDate, GPSPresent);
 
 
