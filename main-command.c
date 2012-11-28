@@ -207,9 +207,9 @@ static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMi
 
 int main(int argc, char** argv)
 {
-	/* Initialize gettext */
-	setlocale (LC_MESSAGES, "");
-	textdomain("gpscorrelate");
+	/* Initialize locale & gettext */
+	setlocale (LC_ALL, "");
+	textdomain(TEXTDOMAIN);
 
 	/* If you didn't pass any arguments... */
 	if (argc == 1)

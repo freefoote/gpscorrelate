@@ -38,6 +38,9 @@
 # define dgettext(Domain,Message) (Message)
 # define dcgettext(Domain,Message,Type) (Message)
 # define bindtextdomain(Domain,Directory) (Domain)
+# define bind_textdomain_codeset(Domain,Codeset) (Domain)
 # define _(String) (String)
 # define N_(String) (String)
 #endif
+
+#define TEXTDOMAIN "gpscorrelate"

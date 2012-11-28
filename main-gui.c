@@ -32,7 +32,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <locale.h>
 
 #include <gtk/gtk.h>
 
@@ -41,9 +40,9 @@
 
 int main(int argc, char* argv[])
 {
-	/* Initialize gettext */
-	setlocale (LC_MESSAGES, "");
-	textdomain("gpscorrelate");
+	/* Initialize gettext (gtk_init initializes the locale) */
+	textdomain(TEXTDOMAIN);
+	bind_textdomain_codeset(TEXTDOMAIN, "UTF-8");
 
 	/* Get GTK ready, as appropriate.
 	 * (We ignore passed parameters) */
