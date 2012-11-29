@@ -47,6 +47,13 @@
 #include "gpsstructure.h"
 #include "exif-gps.h"
 
+#ifdef DEBUG
+#include "exiv2/futils.hpp"
+#define DEBUGLOG(...) fprintf(stderr, __VA_ARGS__)
+#else
+#define DEBUGLOG(...) /* no logging */
+#endif
+
 #define MAX(a,b) (((a)>(b))?(a):(b))
 #define MIN(a,b) (((a)<(b))?(a):(b))
 
@@ -94,16 +101,14 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 	try {
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error e) {
-		fprintf(stderr, "Failed to open file %s.\n", File);
+		DEBUGLOG("Failed to open file %s.\n", File);
 		return NULL;
 	}
 	Image->readMetadata();
 	if (Image.get() == NULL)
 	{
-		//fprintf(stderr, "%s\n",
-		//	Exiv2::ExifData::strError(Result,
-		//		File).c_str());
-		fprintf(stderr, "Failed to read file %s.\n", File);
+		DEBUGLOG("Failed to read file %s %s.\n",
+			 File, Exiv2::strError().c_str());
 		return NULL;
 	}
 
@@ -153,16 +158,14 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 	try {
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error e) {
-		fprintf(stderr, "Failed to open file %s.\n", File);
+		DEBUGLOG("Failed to open file %s.\n", File);
 		return NULL;
 	}
 	Image->readMetadata();
 	if (Image.get() == NULL)
 	{
-		//fprintf(stderr, "%s\n",
-		//	Exiv2::ExifData::strError(Result,
-		//		File).c_str());
-		fprintf(stderr, "Unable to open file %s.\n", File);
+		DEBUGLOG("Failed to read file %s %s.\n",
+			 File, Exiv2::strError().c_str());
 		return NULL;
 	}
 	
@@ -290,16 +293,14 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 	try {
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error e) {
-		fprintf(stderr, "Failed to open file %s.\n", File);
+		DEBUGLOG("Failed to open file %s.\n", File);
 		return NULL;
 	}
 	Image->readMetadata();
 	if (Image.get() == NULL)
 	{
-		//fprintf(stderr, "%s\n",
-		//	Exiv2::ExifData::strError(Result,
-		//		File).c_str());
-		fprintf(stderr, "Unable to open file %s.\n", File);
+		DEBUGLOG("Failed to read file %s %s.\n",
+			 File, Exiv2::strError().c_str());
 		return NULL;
 	}
 	
@@ -478,16 +479,15 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	try {
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error e) {
-		fprintf(stderr, "Failed to open file %s.\n", File);
+		DEBUGLOG("Failed to open file %s.\n", File);
 		return 0;
 	}
 	Image->readMetadata();
 	if (Image.get() == NULL)
 	{
 		// It failed if we got here.
-		//fprintf(stderr, "%s\n",
-		//	Exiv2::ExifData::strError(Result, File).c_str());
-		fprintf(stderr, "Failed to open file %s.\n", File);
+		DEBUGLOG("Failed to read file %s %s.\n",
+			 File, Exiv2::strError().c_str());
 		return 0;
 	}
 	
@@ -627,7 +627,12 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	ExifToWrite["Exif.GPSInfo.GPSDateStamp"] = ScratchBuf;
 
 	// Write the data to file.
-	Image->writeMetadata();
+	try {
+		Image->writeMetadata();
+	} catch (Exiv2::Error e) {
+		DEBUGLOG("Failed to write to file %s.\n", File);
+		return 0;
+	}
 
 	if (NoChangeMtime)
 	{
@@ -655,16 +660,15 @@ int WriteFixedDatestamp(const char* File, time_t Time)
 	try {
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error e) {
-		fprintf(stderr, "Failed to open file %s.\n", File);
+		DEBUGLOG("Failed to open file %s.\n", File);
 		return 0;
 	}
 	Image->readMetadata();
 	if (Image.get() == NULL)
 	{
 		// It failed if we got here.
-		//fprintf(stderr, "%s\n",
-		//	Exiv2::ExifData::strError(Result, File).c_str());
-		fprintf(stderr, "Failed to open file %s.\n", File);
+		DEBUGLOG("Failed to read file %s %s.\n",
+			 File, Exiv2::strError().c_str());
 		return 0;
 	}
 	
@@ -702,7 +706,12 @@ int WriteFixedDatestamp(const char* File, time_t Time)
 	ExifToWrite.erase(ExifToWrite.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSTimeStamp")));
 	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSTimeStamp"), Value.get());
 	
-	Image->writeMetadata();
+	try {
+		Image->writeMetadata();
+	} catch (Exiv2::Error e) {
+		DEBUGLOG("Failed to write to file %s.\n", File);
+		return 0;
+	}
 	
 	// Reset the mtime.
 	stat(File, &statbuf2);
@@ -727,20 +736,25 @@ int RemoveGPSExif(const char* File, int NoChangeMtime)
 	try {
 		Image = Exiv2::ImageFactory::open(File);
 	} catch (Exiv2::Error e) {
-		fprintf(stderr, "Failed to open file %s.\n", File);
+		DEBUGLOG("Failed to open file %s.\n", File);
 		return 0;
 	}
 	Image->readMetadata();
 	if (Image.get() == NULL)
 	{
 		// It failed if we got here.
-		//fprintf(stderr, "%s\n",
-		//	Exiv2::ExifData::strError(Result, File).c_str());
-		fprintf(stderr, "Failed to open file %s.\n", File);
+		DEBUGLOG("Failed to read file %s %s.\n",
+			 File, Exiv2::strError().c_str());
 		return 0;
 	}
 
 	Exiv2::ExifData &ExifInfo = Image->exifData();
+
+	if (ExifInfo.count() == 0)
+	{
+		DEBUGLOG("No EXIF tags in file %s.\n", File);
+		return 0;
+	}
 
 	// Search through, find the keys that we want, and wipe them
 	// Code below submitted by Marc Horowitz
@@ -754,7 +768,12 @@ int RemoveGPSExif(const char* File, int NoChangeMtime)
 			Iter++;
 	}
 	
-	Image->writeMetadata();
+	try {
+		Image->writeMetadata();
+	} catch (Exiv2::Error e) {
+		DEBUGLOG("Failed to write to file %s.\n", File);
+		return 0;
+	}
 
 	if (NoChangeMtime)
 	{

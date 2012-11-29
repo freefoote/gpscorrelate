@@ -133,4 +133,6 @@ v1.6.2git: TBD
 	- Don't record a GPSMapDatum tag if the string is blank
 	- The -g option can be used multiple times to specify multiple GPX files
 	- GUI now allows multiple GPX files to be selected
+	- Command-line client returns non-zero exit code if any file caused
+	  an error
 

@@ -75,8 +75,8 @@ static void PrintVersion(const char* ProgramName)
 /* Function to print the usage info. */
 static void PrintUsage(const char* ProgramName)
 {
-	printf(_("Usage: %s -g|--gps file.gpx [options] file1.jpg ...\n"), ProgramName);
-	puts(  _("-g, --gps file.gpx       Specifies GPX file with GPS data (required)"));
+	printf(_("Usage: %s [options] file.jpg ...\n"), ProgramName);
+	puts(  _("-g, --gps file.gpx       Specifies GPX file with GPS data"));
 	puts(  _("-z, --timeadd +/-HH[:MM] Time to add to GPS data to make it match photos"));
 	puts(  _("-i, --no-interpolation   Disable interpolation between points; interpolation\n"
 	         "                         is linear, points rounded if disabled"));
@@ -97,12 +97,13 @@ static void PrintUsage(const char* ProgramName)
 }
 
 /* Display the information from an existing file. */
-static void ShowFileDetails(const char* File, int MachineReadable)
+static int ShowFileDetails(const char* File, int MachineReadable)
 {
 	double Lat, Long, Elev;
 	int IncludesGPS = 0;
 	Lat = Long = Elev = 0;
 	char* Time = ReadExifData(File, &Lat, &Long, &Elev, &IncludesGPS);
+	int rc = 1;
 
 	if (Time)
 	{
@@ -133,27 +134,30 @@ static void ShowFileDetails(const char* File, int MachineReadable)
 		if (!MachineReadable)
 		{
 			printf(_("%s: No EXIF data.\n"), File);
+			rc = 0;
 		}
 	}
 
 	free(Time);
+	return rc;
 }
 			
 /* Remove all GPS exif tags from a file. Not really that useful, but... */
-/* BUG: presently removes tags even on read-only files. Hmm. */
-static void RemoveGPSTags(const char* File, int NoChangeMtime)
+static int RemoveGPSTags(const char* File, int NoChangeMtime)
 {
 	if (RemoveGPSExif(File, NoChangeMtime))
 	{
 		printf(_("%s: Removed GPS tags.\n"), File);
+		return 1;
 	} else {
 		printf(_("%s: Tag removal failure.\n"), File);
+		return 0;
 	}
 }
 
 /* Fix GPSDatestamp tags, if they were incorrect, as found with versions
  * earlier than 1.5.2. */
-static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMinutes, int NoWriteExif)
+static int FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMinutes, int NoWriteExif)
 {
 	/* Read the timestamp data. */
 	char DateStamp[12];
@@ -161,14 +165,17 @@ static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMi
 	char CombinedTime[24];
 	int IncludesGPS = 0;
 	char* OriginalDateStamp = NULL;
+	int rc = 1;
 
 	OriginalDateStamp = ReadGPSTimestamp(File, DateStamp, TimeStamp, &IncludesGPS);
 
 	if (OriginalDateStamp == NULL)
 	{
 		printf(_("%s: No EXIF data.\n"), File);
+		rc = 0;
 	} else if (IncludesGPS == 0) {
 		printf(_("%s: No GPS data.\n"), File);
+		rc = 0;
 	} else {
 		/* Check the timestamp. */
 		time_t PhotoTime = ConvertToUnixTime(OriginalDateStamp, EXIF_DATE_FORMAT,
@@ -203,6 +210,7 @@ static void FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMi
 	}
 
 	free(OriginalDateStamp);
+	return rc;
 }
 
 int main(int argc, char** argv)
@@ -408,21 +416,23 @@ int main(int argc, char** argv)
 	/* If we only wanted to display info on the passed photos, do so now. */
 	if (ShowOnlyDetails)
 	{
+		int result = 1;
 		while (optind < argc)
 		{
-			ShowFileDetails(argv[optind++], MachineReadable);
+			result = ShowFileDetails(argv[optind++], MachineReadable) && result;
 		}
-		exit(EXIT_SUCCESS);
+		exit(result ? EXIT_SUCCESS : EXIT_FAILURE);
 	}
 
 	/* If we wanted to delete tags, do this now. */
 	if (RemoveTags)
 	{
+		int result = 1;
 		while (optind < argc)
 		{
-			RemoveGPSTags(argv[optind++], NoChangeMtime);
+			result = RemoveGPSTags(argv[optind++], NoChangeMtime) && result;
 		}
-		exit(EXIT_SUCCESS);
+		exit(result ? EXIT_SUCCESS : EXIT_FAILURE);
 	}
 
 	/* If we wanted to fix datestamps, do this now.
@@ -433,14 +443,15 @@ int main(int argc, char** argv)
 		if (!HaveTimeAdjustment)
 		{
 			printf(_("You must give a time adjustment for the photos with -z to fix photos.\n"));
-			exit(EXIT_SUCCESS);
+			exit(EXIT_FAILURE);
 		}
 		
+		int result = 1;
 		while (optind < argc)
 		{
-			FixDatestamp(argv[optind++], TimeZoneHours, TimeZoneMins, NoWriteExif);
+			result = FixDatestamp(argv[optind++], TimeZoneHours, TimeZoneMins, NoWriteExif) && result;
 		}
-		exit(EXIT_SUCCESS);
+		exit(result ? EXIT_SUCCESS : EXIT_FAILURE);
 	}
 
 	/* Set up any other command line options... */
@@ -671,6 +682,6 @@ int main(int argc, char** argv)
 	free(Track);
 	free(Datum);
 	
-	return 0;
+	return(WriteFail ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
