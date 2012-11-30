@@ -136,9 +136,34 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 	struct GPSPoint* Actual = (struct GPSPoint*) malloc(sizeof(struct GPSPoint));
 
 	Options->Result = CORR_NOMATCH; /* For convenience later */
-	
+
 	for (Search = Options->Track[TrackNum].Points; Search; Search = Search->Next)
 	{
+		/* First test: is it exactly this point? */
+		if (PhotoTime == Search->Time)
+		{
+			/* This is the point, exactly.
+			 * Copy out the data and return that. */
+			Actual->Lat = Search->Lat;
+			Actual->LatDecimals = Search->LatDecimals;
+			Actual->Long = Search->Long;
+			Actual->LongDecimals = Search->LongDecimals;
+			Actual->Elev = Search->Elev;
+			Actual->ElevDecimals = Search->ElevDecimals;
+			Actual->Time = Search->Time;
+
+			Options->Result = CORR_OK;
+			break;
+		}
+
+		/* Sanity check / track segment fix: is the photo time before
+		 * the current point? If so, we've gone past it. Hrm. */
+		if (Search->Time > PhotoTime)
+		{
+			Options->Result = CORR_NOMATCH;
+			break;
+		}
+
 		/* Sanity check: we need to peek at the next point.
 		 * Make sure we can. */
 		if (Search->Next == NULL) break;
@@ -163,14 +188,6 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 			}
 		}
 
-		/* Sanity check / track segment fix: is the photo time before
-		 * the current point? If so, we've gone past it. Hrm. */
-		if (Search->Time > PhotoTime)
-		{
-			Options->Result = CORR_NOMATCH;
-			break;
-		}
-		
 		/* Sort of sanity check: is this photo inside our
 		 * "feather" time? If not, abort. */
 		if (Options->FeatherTime)
@@ -193,23 +210,6 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 				} 
 			}
 		} /* endif (Options->Feather) */
-		
-		/* First test: is it exactly this point? */
-		if (PhotoTime == Search->Time)
-		{
-			/* This is the point, exactly.
-			 * Copy out the data and return that. */
-			Actual->Lat = Search->Lat;
-			Actual->LatDecimals = Search->LatDecimals;
-			Actual->Long = Search->Long;
-			Actual->LongDecimals = Search->LongDecimals;
-			Actual->Elev = Search->Elev;
-			Actual->ElevDecimals = Search->ElevDecimals;
-			Actual->Time = Search->Time;
-
-			Options->Result = CORR_OK;
-			break;
-		}
 		
 		/* Second test: is it between this and the
 		 * next point? */

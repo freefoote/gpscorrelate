@@ -134,6 +134,7 @@ static void ExtractTrackPoints(xmlNodePtr Start)
 			} else {
 				/* This is the first one. */
 				FirstPoint = (struct GPSPoint*) malloc(sizeof(struct GPSPoint));
+				FirstPoint->Next = NULL;
 				LastPoint = FirstPoint;
 			}
 
