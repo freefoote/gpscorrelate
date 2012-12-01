@@ -44,6 +44,8 @@
 #include "gpx-read.h"
 #include "correlate.h"
 
+#define GPS_EXIT_WARNING 2
+
 /* Command line options structure. */
 static const struct option program_options[] = {
 	{ "gps", required_argument, 0, 'g' },
@@ -410,7 +412,7 @@ int main(int argc, char** argv)
 	} else {
 		/* Hmm. It seems there were no other files... that doesn't work. */
 		printf(_("Nice try! However, next time, pass a few JPEG files to match!\n"));
-		exit(EXIT_SUCCESS);
+		exit(EXIT_FAILURE);
 	}
 
 	/* If we only wanted to display info on the passed photos, do so now. */
@@ -682,6 +684,13 @@ int main(int argc, char** argv)
 	free(Track);
 	free(Datum);
 	
-	return(WriteFail ? EXIT_FAILURE : EXIT_SUCCESS);
+	if (WriteFail)
+		/* A write failure is considered serious */
+		return EXIT_FAILURE;
+
+	/* Other failures aren't necessarily bad, depending on the input,
+	 * so provide a different return code to distinguish them.
+	 */
+	return(NotMatched + TooFar + NoDate + GPSPresent ? GPS_EXIT_WARNING : EXIT_SUCCESS);
 }
 

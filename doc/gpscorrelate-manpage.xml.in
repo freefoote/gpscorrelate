@@ -28,7 +28,7 @@
     </author>
     <copyright>
       <year>2006, 2008</year>
-      <holder>&dhusername; &dhemail;, Till Maas</holder>
+      <holder>&dhusername; &dhemail;, Till Maas, Dan Fandrich</holder>
     </copyright>
     <version>
       &dhversion;
@@ -383,9 +383,25 @@
 
   </refsect1>
   <refsect1>
+    <title>EXIT STATUS</title>
+
+    <para>
+	    <command>gpscorrelate</command> returns <errorcode>0</errorcode> in
+	    case of success, <errorcode>1</errorcode> in case of major error
+	    (such as a read or write error) and <errorcode>2</errorcode> in
+	    case of minor error (such as the given GPS track not covering the
+	    time of an image).
+    </para>
+
+  </refsect1>
+  <refsect1>
     <title>SEE ALSO</title>
 
-    <para>gpsd (1), gpsbabel (1), gpxlogger (1), cgpxlogger (1).</para>
+    <para><citerefentry><refentrytitle>gpsd</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+	  <citerefentry><refentrytitle>gpsbabel</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+	  <citerefentry><refentrytitle>gpxlogger</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+	  <citerefentry><refentrytitle>cgpxlogger</refentrytitle><manvolnum>1</manvolnum></citerefentry>.
+    </para>
 
     <para>The documentation of &dhpackage; and &dhpackage;-gui in HTML format
       are available on the filesystem at <filename
@@ -394,7 +410,7 @@
 
   </refsect1>
   <refsect1>
-    <title>AUTHOR</title>
+    <title>LICENSE</title>
 
     <para>This manual page was initially written by &dhusername; &dhemail; for
       the &debian; system.  It was extended by Till Maas
