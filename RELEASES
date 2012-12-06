@@ -138,4 +138,6 @@ v1.6.2git: TBD
         - Fixed NULL pointer dereference with GPX files containing a
           single point
 	- Stop ignoring the last point in a track with --no-interpolation
-
+	- The progress graph that shows while processing many images on a slow
+	  machine is now displayed as the files are processed.
+	- --machine output is no longer dependent on the current locale

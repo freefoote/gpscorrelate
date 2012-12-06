@@ -33,10 +33,6 @@
 #include <string.h>
 #include <locale.h>
 
-#ifndef WIN32
-  #include <termios.h>
-#endif
-
 #include "i18n.h"
 #include "gpsstructure.h"
 #include "exif-gps.h"
@@ -342,12 +338,8 @@ int main(int argc, char** argv)
 				break;
 			case 'v':
 				/* This option asks us to show more info. */
-#ifdef WIN32
-				printf(_("--verbose does not work on Windows\n"));
-#else
 				PrintVersion(argv[0]);
 				ShowDetails = 1;
-#endif
 				break;
 			case 'd':
 				/* This option specifies a Datum, if other than WGS-84. */
@@ -507,24 +499,11 @@ int main(int argc, char** argv)
 
 	Options.Track         = Track;
 
-	/* Twig with the terminal settings to make the single character
-	 * output stuff work right. */
-#ifndef WIN32
-	struct termios initial_settings, new_settings;
 	if (!ShowDetails)
 	{
-		tcgetattr(fileno(stdout),&initial_settings);
-		new_settings = initial_settings;
-		new_settings.c_lflag &= ~ICANON;
-		new_settings.c_cc[VMIN] = 1;
-		new_settings.c_cc[VTIME] = 0;
-		new_settings.c_lflag &= ~ISIG;
-		if(tcsetattr(fileno(stdout), TCSANOW, &new_settings) != 0) {
-			/* Oops. Oh well. Didn't work. */
-			printf(_("Debug: Broken tty set.\n"));
-		}
+		/* Unbuffer stdout so dots appear immediately */
+		setvbuf(stdout, NULL, _IONBF, 0);
 	}
-#endif
 
 	/* Make it all look nice and pretty... so the user knows what's going on. */
 	printf(_("\nCorrelate: "));
@@ -660,13 +639,11 @@ int main(int argc, char** argv)
 	/* Right, so now we're done. That really wasn't that hard. Right? */
 
 	/* Add a new line if we were doing the not-show-details thing. */
-#ifndef WIN32
 	if (!ShowDetails)
 	{
 		printf("\n");
-		tcsetattr(fileno(stdout), TCSANOW, &initial_settings);
+		setvbuf(stdout, NULL, _IOLBF, 0);
 	}
-#endif
 
 	/* Print details of what happened. */
 	printf(_("\nCompleted correlation process.\n"));
