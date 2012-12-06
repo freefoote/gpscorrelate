@@ -443,9 +443,9 @@ static void ConvertToLatLongRational(double Number, int Decimals, char *Buf, int
 	// significant figures in the original data point. Splitting off the
 	// minutes and integer seconds reduces the number of significant
 	// figures by 3.6 (log10(60*60)), so round it down to 3 in order to
-	// preserve the maximum precision.  Cap it at 9 to avoid overflow
+	// preserve the maximum precision.  Cap it at 7 to avoid overflow
 	// in the EXIF rational data type.
-	int Multiplier = powl(10, MAX(0, MIN(Decimals - 3, 9)));
+	int Multiplier = powl(10, MAX(0, MIN(Decimals - 3, 7)));
 	Sec = (int)floor(FracPart * 60 * Multiplier); // Convert to seconds.
 	snprintf(Buf, BufSize, "%d/1 %d/1 %d/%d", Deg, Min, Sec, Multiplier);
 	//printf("New style lat/long: %f -> %d/%d/ %d/%d\n", Number, Deg, Min, Sec, Multiplier);
