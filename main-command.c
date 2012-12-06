@@ -106,6 +106,13 @@ static int ShowFileDetails(const char* File, int MachineReadable)
 	Lat = Long = Elev = 0;
 	char* Time = ReadExifData(File, &Lat, &Long, &Elev, &IncludesGPS);
 	int rc = 1;
+	const char* OldLocale = NULL;
+
+	if (MachineReadable)
+	{
+		OldLocale = setlocale(LC_NUMERIC, NULL);
+		setlocale(LC_NUMERIC, "C");
+	}
 
 	if (Time)
 	{
@@ -141,6 +148,10 @@ static int ShowFileDetails(const char* File, int MachineReadable)
 	}
 
 	free(Time);
+
+	if (MachineReadable)
+		setlocale(LC_NUMERIC, OldLocale);
+
 	return rc;
 }
 			
