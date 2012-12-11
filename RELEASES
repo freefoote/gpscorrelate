@@ -141,3 +141,4 @@ v1.6.2git: TBD
 	- The progress graph that shows while processing many images on a slow
 	  machine is now displayed as the files are processed.
 	- --machine output is no longer dependent on the current locale
+	- Fixed time calculations spanning DST discontinuities

@@ -206,10 +206,11 @@ static int FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMin
 			char GPSTimeFormat[100];
 
 			strftime(PhotoTimeFormat, sizeof(PhotoTimeFormat),
-				 "%a %b %e %T %Y\n", localtime(&PhotoTime));
+				 "%a %b %e %T %Y UTC", gmtime(&PhotoTime));
 			strftime(GPSTimeFormat, sizeof(GPSTimeFormat),
-				 "%a %b %e %T %Y\n", localtime(&GPSTime));
-			printf(_("%s: Wrong timestamp:\n   Photo:     %s   GPS:       %s   Corrected: %s"),
+				 "%a %b %e %T %Y UTC", gmtime(&GPSTime));
+			printf(_("%s: Wrong timestamp:\n   Photo:     %s\n"
+				 "   GPS:       %s\n   Corrected: %s\n"),
 					File, PhotoTimeFormat, GPSTimeFormat, PhotoTimeFormat);
 		} else {
 			/* Inside the range. Do nothing! */

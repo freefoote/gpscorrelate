@@ -362,7 +362,7 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 		RatNum2 = GPSData.toRational(1);
 		RatNum3 = GPSData.toRational(2);
 		snprintf(DateStamp, 12, "%04d:%02d:%02d",
-				RatNum1.first, RatNum2.first, RatNum3.first);
+			 RatNum1.first, RatNum2.first, RatNum3.first);
 	}
 
 	return Copy;
@@ -601,16 +601,6 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	// The timestamp is taken as the UTC time of the photo.
 	// If interpolation occurred, then this time is the time of the photo.
 	struct tm TimeStamp = *gmtime(&(Point->Time));
-	TimeStamp.tm_isdst = -1;
-
-	if (Point->Time != mktime(&TimeStamp)) {
-		// What happened is gmtime subtracted the current time zone.
-		// I thought it was called "gmtime" for a reason.
-		// Oh well. Add the difference and try again.
-		// This is a hack.
-		time_t CorrectedTime = Point->Time + (Point->Time - mktime(&TimeStamp));
-		TimeStamp = *gmtime(&CorrectedTime);
-	}
 
 	Value = Exiv2::Value::create(Exiv2::unsignedRational);
 	snprintf(ScratchBuf, sizeof(ScratchBuf), "%d/1 %d/1 %d/1",
@@ -675,16 +665,6 @@ int WriteFixedDatestamp(const char* File, time_t Time)
 	Exiv2::ExifData &ExifToWrite = Image->exifData();
 	
 	struct tm TimeStamp = *gmtime(&Time);
-	TimeStamp.tm_isdst = -1;
-
-	if (Time != mktime(&TimeStamp)) {
-		// What happened is gmtime subtracted the current time zone.
-		// I thought it was called "gmtime" for a reason.
-		// Oh well. Add the difference and try again.
-		// This is a hack.
-		time_t CorrectedTime = Time + (Time - mktime(&TimeStamp));
-		TimeStamp = *gmtime(&CorrectedTime);
-	}
 
 	char ScratchBuf[100];
 

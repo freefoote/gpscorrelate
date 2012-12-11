@@ -77,11 +77,15 @@ struct GPSPoint* CorrelatePhoto(const char* Filename,
 		 * as the time for correlating all the remainder. */
 		time_t RealTime;
 
-		/* PhotoTime isn't actually Epoch-based, but will be wrong by
-		 * an amount equal to the the local time zone offset. */
+		/* PhotoTime isn't a true epoch time, but is rather out
+		 * by the local offset from UTC */
 		time_t PhotoTime =
 			ConvertToUnixTime(TimeTemp, EXIF_DATE_FORMAT, 0, 0);
+
+		/* Extract the component time values */
 		struct tm *PhotoTm = gmtime(&PhotoTime);
+
+		/* Then create a true epoch-based local time, including DST */
 		PhotoTm->tm_isdst = -1;
 		RealTime = mktime(PhotoTm);
 

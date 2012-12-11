@@ -347,7 +347,9 @@
           <option>--fix-timestamps</option>
         </term>
         <listitem>
-          <para>Fix broken GPS datestamps written with versions &lt; 1.5.2</para>
+	  <para>Fix broken GPS datestamps written with versions &lt; 1.5.2 by
+	  replacing them with the photo's time stamp. This option implies
+	  <userinput>--no-mtime</userinput></para>
         </listitem>
       </varlistentry>
       

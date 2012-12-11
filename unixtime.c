@@ -32,6 +32,25 @@
 
 #include "unixtime.h"
 
+/* Some systems have a version of this called timegm(), but it's not portable */
+static time_t portable_timegm(struct tm *tm)
+{
+	const char *tz = getenv("TZ");
+
+	/* Set an empty TZ to force UTC */
+	setenv("TZ", "", 1);
+	tzset();
+	time_t ret = mktime(tm);
+
+	/* Restore the original TZ */
+	if (tz)
+	   setenv("TZ", tz, 1);
+	else
+	   unsetenv("TZ");
+	tzset();
+	return ret;
+}
+
 time_t ConvertToUnixTime(const char* StringTime, const char* Format,
 		int TZOffsetHours, int TZOffsetMinutes)
 {
@@ -51,7 +70,7 @@ time_t ConvertToUnixTime(const char* StringTime, const char* Format,
 	struct tm Time;
 	Time.tm_wday = 0;
 	Time.tm_yday = 0;
-	Time.tm_isdst = -1;
+	Time.tm_isdst = 0; // there is no DST in UTC
 
 	/* Read out the time from the string using our format. */
 	sscanf(StringTime, Format, &Time.tm_year, &Time.tm_mon,
@@ -62,16 +81,15 @@ time_t ConvertToUnixTime(const char* StringTime, const char* Format,
 	Time.tm_year -= 1900;
 	Time.tm_mon  -= 1;
 
+	/* Calculate and return the Unix time. */
+	time_t thetime = portable_timegm(&Time);
+
 	/* Add our timezone offset to the time.
-	 * We don't check to see if it overflowed anything;
-	 * mktime does this and fixes it for us. */
-	/* Note also that we SUBTRACT these times. We want the
+	 * Note also that we SUBTRACT these times. We want the
 	 * result to be in UTC. */
+	thetime -= TZOffsetHours * 60 * 60;
+	thetime -= TZOffsetMinutes * 60;
 
-	Time.tm_hour -= TZOffsetHours;
-	Time.tm_min  -= TZOffsetMinutes;
-
-	/* Calculate and return the unix time. */
-	return mktime(&Time);
+	return thetime;
 }
 
