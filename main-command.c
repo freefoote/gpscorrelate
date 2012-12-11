@@ -573,7 +573,7 @@ int main(int argc, char** argv)
 				WriteFail++;
 				if (ShowDetails)
 				{
-					printf(_("%s: Exif write failure: "), File);
+					printf(_("%s: EXIF write failure: "), File);
 				} else {
 					printf("w");
 				}
@@ -614,7 +614,7 @@ int main(int argc, char** argv)
 				NoDate++;
 				if (ShowDetails)
 				{
-					printf(_("%s: No date exif tag present.\n"), File);
+					printf(_("%s: No EXIF date tag present.\n"), File);
 				} else {
 					printf("?");
 				}

@@ -356,8 +356,8 @@ GtkWidget* CreateMatchWindow (void)
   gtk_widget_show (DegMinSecsCheck);
   gtk_box_pack_start (GTK_BOX (OptionsVBox), DegMinSecsCheck, FALSE, FALSE, 0);
   gtk_tooltips_set_tip (tooltips, DegMinSecsCheck,
-	_("Write the latitude and longitude values as DD MM SS.SS. This is "
-	  "the new default as of v1.5.3. The old behaviour is to write it as "
+	_("Write the latitude and longitude values as DD MM SS.SS; this is "
+	  "the new default. The old behaviour was to write it as "
 	  "DD MM.MM, which will occur if you uncheck this box."), NULL);
   gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (DegMinSecsCheck), g_key_file_get_boolean(GUISettings, "default", "writeddmmss", NULL));
 
@@ -424,7 +424,7 @@ GtkWidget* CreateMatchWindow (void)
                     (GtkAttachOptions) (0),
                     (GtkAttachOptions) (0), 0, 0);
   gtk_tooltips_set_tip (tooltips, PhotoOffsetEntry,
-	_("The number of seconds to ADD to the photos time to make it match "
+	_("The number of seconds to add to the photo's time to make it match "
 	  "the GPS data. Calculate this with (GPS - Photo). "
 	  "Can be negative or positive."), NULL);
   gtk_entry_set_text (GTK_ENTRY (PhotoOffsetEntry), g_key_file_get_value(GUISettings, "default", "photooffset", NULL));
@@ -460,8 +460,8 @@ GtkWidget* CreateMatchWindow (void)
   gtk_widget_show (CorrelateButton);
   gtk_container_add (GTK_CONTAINER (CorrelateAlignment), CorrelateButton);
   gtk_tooltips_set_tip (tooltips, CorrelateButton,
-	_("Begin the correlation process, writing back to the photos "
-	  "if not disabled."), NULL);
+	_("Begin the correlation process, writing back into the photos' "
+	  "EXIF tags (unless Don't write is selected)."), NULL);
   g_signal_connect (G_OBJECT (CorrelateButton), "clicked",
   		G_CALLBACK (CorrelateButtonPress), NULL);
 
