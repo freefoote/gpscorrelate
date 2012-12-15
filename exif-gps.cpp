@@ -358,11 +358,15 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 			*IncludesGPS = 0;
 			return Copy;
 		}
-		RatNum1 = GPSData.toRational(0);
-		RatNum2 = GPSData.toRational(1);
-		RatNum3 = GPSData.toRational(2);
-		snprintf(DateStamp, 12, "%04d:%02d:%02d",
-			 RatNum1.first, RatNum2.first, RatNum3.first);
+		if (GPSData.typeId() == Exiv2::signedRational) {
+			// bad type written by old gpscorrelate versions
+			RatNum1 = GPSData.toRational(0);
+			RatNum2 = GPSData.toRational(1);
+			RatNum3 = GPSData.toRational(2);
+			snprintf(DateStamp, 12, "%04d:%02d:%02d",
+				 RatNum1.first, RatNum2.first, RatNum3.first);
+		} else
+			snprintf(DateStamp, 12, "%s", GPSData.toString().c_str());
 	}
 
 	return Copy;
@@ -664,21 +668,17 @@ int WriteFixedDatestamp(const char* File, time_t Time)
 	
 	Exiv2::ExifData &ExifToWrite = Image->exifData();
 	
-	struct tm TimeStamp = *gmtime(&Time);
-
+	const struct tm TimeStamp = *gmtime(&Time);
 	char ScratchBuf[100];
 
-	Exiv2::Value::AutoPtr Value;
-	Value = Exiv2::Value::create(Exiv2::unsignedRational);
-	snprintf(ScratchBuf, sizeof(ScratchBuf), "%d/1 %d/1 %d/1",
+	snprintf(ScratchBuf, sizeof(ScratchBuf), "%04d:%02d:%02d",
 			TimeStamp.tm_year + 1900,
 			TimeStamp.tm_mon + 1,
 			TimeStamp.tm_mday);
-	Value->read(ScratchBuf);
 	ExifToWrite.erase(ExifToWrite.findKey(Exiv2::ExifKey("Exif.GPSInfo.GPSDateStamp")));
-	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSDateStamp"), Value.get());
-	
-	Value = Exiv2::Value::create(Exiv2::unsignedRational);
+	ExifToWrite["Exif.GPSInfo.GPSDateStamp"] = ScratchBuf;
+
+	Exiv2::Value::AutoPtr Value = Exiv2::Value::create(Exiv2::unsignedRational);
 	snprintf(ScratchBuf, sizeof(ScratchBuf), "%d/1 %d/1 %d/1",
 			TimeStamp.tm_hour, TimeStamp.tm_min,
 			TimeStamp.tm_sec);
