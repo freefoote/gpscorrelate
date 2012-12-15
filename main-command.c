@@ -653,7 +653,7 @@ int main(int argc, char** argv)
 		 * was used, since it isn't known before the first file
 		 * is processed. */
 		printf(_("Used time zone offset %d:%02d\n"),
-		       Options.TimeZoneHours, Options.TimeZoneMins);
+		       Options.TimeZoneHours, abs(Options.TimeZoneMins));
 	printf(_("Matched: %5d (%d Exact, %d Interpolated, %d Rounded).\n"),
 			MatchExact + MatchInter + MatchRound,
 			MatchExact, MatchInter, MatchRound);
