@@ -200,7 +200,7 @@ static int FixDatestamp(const char* File, int AdjustmentHours, int AdjustmentMin
 			 * GPSTimestamp, which was wrong too. */
 			if (!NoWriteExif)
 			{
-				WriteFixedDatestamp(File, PhotoTime);
+				rc = WriteFixedDatestamp(File, PhotoTime);
 			}
 			char PhotoTimeFormat[100];
 			char GPSTimeFormat[100];

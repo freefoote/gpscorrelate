@@ -133,7 +133,7 @@ v1.6.2git: TBD
 	- Don't record a GPSMapDatum tag if the string is blank
 	- The -g option can be used multiple times to specify multiple GPX files
 	- GUI now allows multiple GPX files to be selected
-	- Return status in command-line client now reflects if any image
+	- Exit status in command-line client now reflects if any image
 	  encountered a fatal or nonfatal error
         - Fixed NULL pointer dereference with GPX files containing a
           single point
