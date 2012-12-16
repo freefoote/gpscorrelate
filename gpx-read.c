@@ -144,7 +144,7 @@ static void ExtractTrackPoints(xmlNodePtr Start)
 			LastPoint->Long = 0;
 			LastPoint->LongDecimals = 0;
 			LastPoint->Elev = 0;
-			LastPoint->ElevDecimals  = 0;
+			LastPoint->ElevDecimals = -1; // default meaning no altitude was found
 			LastPoint->Time = 0;
 			LastPoint->EndOfSegment = 0;
 

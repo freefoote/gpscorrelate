@@ -329,8 +329,9 @@ void Interpolate(const struct GPSPoint* First, struct GPSPoint* Result,
 	Result->Long = First->Long + ((First->Next->Long - First->Long) * Scale);
 	Result->LongDecimals = MIN(First->LongDecimals, First->Next->LongDecimals);
 
-	/* And the elevation. If elevation wasn't set, it should be zero.
-	 * Which works quite fine for us. */
+	/* And the elevation. If elevation wasn't set, it should be zero with
+	 * a negative ElevDecimals, which will cause it to be dropped
+	 * when written. */
 	Result->Elev = First->Elev + ((First->Next->Elev - First->Elev) * Scale);
 	Result->ElevDecimals = MIN(First->ElevDecimals, First->Next->ElevDecimals);
 

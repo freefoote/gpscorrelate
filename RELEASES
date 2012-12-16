@@ -142,3 +142,4 @@ v1.6.2git: TBD
 	  machine is now displayed as the files are processed.
 	- --machine output is no longer dependent on the current locale
 	- Fixed time calculations spanning DST discontinuities
+	- Only write an altitude tag if it exists in the GPX file

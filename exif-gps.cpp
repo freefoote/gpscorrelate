@@ -144,7 +144,7 @@ char* ReadExifDate(const char* File, int* IncludesGPS)
 	}
 
 	// Now return, passing a pointer to the date string.
-	return Copy; // Its up to the caller to free this.
+	return Copy; // It's up to the caller to free this.
 }
 
 char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, int* IncludesGPS)
@@ -277,7 +277,7 @@ char* ReadExifData(const char* File, double* Lat, double* Long, double* Elev, in
 
 
 	// Now return, passing a pointer to the date string.
-	return Copy; // Its up to the caller to free this.
+	return Copy; // It's up to the caller to free this.
 }
 
 // This function is for the --fix-datestamp option.
@@ -511,25 +511,28 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	
 	// Now start adding data.
 	// ALTITUDE.
-	// Altitude reference: byte "00" meaning "sea level".
-	// Or "01" if the altitude value is negative.
-	Value = Exiv2::Value::create(Exiv2::unsignedByte);
-	if (Point->Elev > 0)
-	{
-		Value->read("0");
-	} else {
-		Value->read("1");
-	}
-	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSAltitudeRef"), Value.get());
-	// And the actual altitude.
-	Value = Exiv2::Value::create(Exiv2::unsignedRational);
-	// 3 decimal points is beyond the limit of current GPS technology
-	int Decimals = MIN(Point->ElevDecimals, 3);
-	ConvertToRational(fabs(Point->Elev), Decimals, ScratchBuf, sizeof(ScratchBuf));
+	// If no altitude was found in the GPX file, ElevDecimals will be -1
+	if (Point->ElevDecimals >= 0) {
+		// Altitude reference: byte "00" meaning "sea level".
+		// Or "01" if the altitude value is negative.
+		Value = Exiv2::Value::create(Exiv2::unsignedByte);
+		if (Point->Elev >= 0)
+		{
+			Value->read("0");
+		} else {
+			Value->read("1");
+		}
+		ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSAltitudeRef"), Value.get());
+		// And the actual altitude.
+		Value = Exiv2::Value::create(Exiv2::unsignedRational);
+		// 3 decimal points is beyond the limit of current GPS technology
+		int Decimals = MIN(Point->ElevDecimals, 3);
+		ConvertToRational(fabs(Point->Elev), Decimals, ScratchBuf, sizeof(ScratchBuf));
 
-	/* printf("Altitude: %f -> %s\n", Point->Elev, ScratchBuf); */
-	Value->read(ScratchBuf);
-	ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSAltitude"), Value.get());
+		/* printf("Altitude: %f -> %s\n", Point->Elev, ScratchBuf); */
+		Value->read(ScratchBuf);
+		ExifToWrite.add(Exiv2::ExifKey("Exif.GPSInfo.GPSAltitude"), Value.get());
+	}
 	
 	// LATITUDE
 	// Latitude reference: "N" or "S".
