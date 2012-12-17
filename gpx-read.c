@@ -236,7 +236,6 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 	
 	/* Read the GPX data from file. */
 	GPXData = xmlParseFile(File);
-	
 	if (GPXData == NULL)
 	{
 		fprintf(stderr, _("Failed to parse GPX data from %s.\n"), File);
@@ -250,6 +249,8 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 	if (GPXRoot == NULL)
 	{
 		fprintf(stderr, _("GPX file has no root. Not healthy.\n"));
+		xmlFreeDoc(GPXData);
+		xmlCleanupParser();
 		return 0;
 	}
 
@@ -261,6 +262,8 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 	} else {
 		/* Not valid. */
 		fprintf(stderr, _("Invalid GPX file.\n"));
+		xmlFreeDoc(GPXData);
+		xmlCleanupParser();
 		return 0;
 	}
 
@@ -292,12 +295,13 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 	FirstPoint = NULL;
 	LastPoint = NULL;
 	
-	const char* OldLocale = setlocale(LC_NUMERIC, NULL);
+	char* OldLocale = strdup(setlocale(LC_NUMERIC, NULL));
 	setlocale(LC_NUMERIC, "C");
 	
 	FindTrackSeg(GPXRoot);
 
 	setlocale(LC_NUMERIC, OldLocale);
+	free(OldLocale);
 
 	/* Clean up stuff for the XML library. */
 	xmlFreeDoc(GPXData);
