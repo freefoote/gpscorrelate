@@ -143,3 +143,5 @@ v1.6.2git: TBD
 	- --machine output is no longer dependent on the current locale
 	- Fixed time calculations spanning DST discontinuities
 	- Only write an altitude tag if it exists in the GPX file
+	- Prevent duplicate GPS tags in the final file (which could
+	  happen if some tags already existed before correlation)

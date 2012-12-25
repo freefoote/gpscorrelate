@@ -372,6 +372,21 @@ char* ReadGPSTimestamp(const char* File, char* DateStamp, char* TimeStamp, int* 
 	return Copy;
 }
 
+static void EraseGpsTags(Exiv2::ExifData &ExifInfo)
+{
+	// Search through, find the keys that we want, and wipe them
+	// Code below submitted by Marc Horowitz
+	Exiv2::ExifData::iterator Iter;
+	for (Exiv2::ExifData::iterator Iter = ExifInfo.begin();
+		Iter != ExifInfo.end(); )
+	{
+		if (Iter->key().find("Exif.GPSInfo") == 0)
+			Iter = ExifInfo.erase(Iter);
+		else
+			Iter++;
+	}
+}
+
 static void ConvertToRational(double Number, int Decimals, char *Buf, int BufSize)
 {
 	// This function converts the given decimal number
@@ -496,6 +511,12 @@ int WriteGPSData(const char* File, const struct GPSPoint* Point,
 	}
 	
 	Exiv2::ExifData &ExifToWrite = Image->exifData();
+
+	// Make sure we're starting from a clean GPS IFD.
+	// There might be lots of GPS tags existing here, since only the
+	// presence of the GPSLatitude tag causes correlation to stop with
+	// "GPS Already Present" error.
+	EraseGpsTags(ExifToWrite);
 
 	char ScratchBuf[100];
 
@@ -739,17 +760,7 @@ int RemoveGPSExif(const char* File, int NoChangeMtime)
 		return 0;
 	}
 
-	// Search through, find the keys that we want, and wipe them
-	// Code below submitted by Marc Horowitz
-	Exiv2::ExifData::iterator Iter;
-	for (Exiv2::ExifData::iterator Iter = ExifInfo.begin();
-		Iter != ExifInfo.end(); )
-	{
-		if (Iter->key().find("Exif.GPSInfo") == 0)
-			Iter = ExifInfo.erase(Iter);
-		else
-			Iter++;
-	}
+	EraseGpsTags(ExifInfo);
 	
 	try {
 		Image->writeMetadata();
