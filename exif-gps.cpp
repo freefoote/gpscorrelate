@@ -387,65 +387,22 @@ static void EraseGpsTags(Exiv2::ExifData &ExifInfo)
 	}
 }
 
+/* Converts a floating point number with known significant decimal places
+ * into a string representation of a rational number.
+ * Number must be non-negative.
+ */
 static void ConvertToRational(double Number, int Decimals, char *Buf, int BufSize)
 {
-	// This function converts the given decimal number
-	// to a rational (fractional) number.
-	//
-	// Examples in comments use Number as 25.12345, Decimals as 4.
-	
-	// Split up the number.
-	double Whole = trunc(Number);
-	double Fractional = Number - Whole;
-
-	// Calculate the "number" used for rounding.
-	// This is 10^Digits - ie, 4 places gives us 10000.
-	double Rounder = pow(10, Decimals);
-
-	// Round the fractional part, and leave the number
-	// as greater than 1.
-	// To do this we: (for example)
-	//  0.12345 * 10000 = 1234.5
-	//  floor(1234.5) = 1234 - now bigger than 1 - ready...
-	Fractional = trunc(Fractional * Rounder);
-
-	// Convert the whole thing to a fraction.
-	// Fraction is:
-	//     (25 * 10000) + 1234   251234
-	//     ------------------- = ------ = 25.1234
-	//           10000            10000
-	double NumTemp = (Whole * Rounder) + Fractional;
-	double DenTemp = Rounder;
-
-	// Now we should reduce until we can reduce no more.
-	
-	// Try simple reduction...
-	// if   Num
-	//     ----- = integer out then....
-	//      Den
-	if (trunc(NumTemp / DenTemp) == (NumTemp / DenTemp))
-	{
-		// Divide both by Denominator.
-		NumTemp /= DenTemp;
-		DenTemp /= DenTemp;
-	}
-	
-	// And, if that fails, brute force it.
-	while (1)
-	{
-		// Jump out if we can't integer divide one.
-		if ((NumTemp / 2) != trunc(NumTemp / 2)) break;
-		if ((DenTemp / 2) != trunc(DenTemp / 2)) break;
-		// Otherwise, divide away.
-		NumTemp /= 2;
-		DenTemp /= 2;
-	}
-
-	// Copy out the numbers.
-	snprintf(Buf, BufSize, "%ld/%ld", (long)NumTemp, (long)DenTemp);
-
-	// And finished...
-
+	// Calculate the appropriate denominator based on the number of
+	// significant figures in the original data point.
+	// Add one to deal with the fact that an even factor of 10 requires
+	// one more digit to represent than the exponent (e.g. 10^3 = 1000
+	// takes four digits to represent, not the 3 from the exponent).
+	// Cap it at 10^9 to avoid overflow in the EXIF rational data type.
+	int IntDecimals = ceil(log10(Number + 1.0));
+	int Multiplier = powl(10, MAX(0, MIN(Decimals, 9 - IntDecimals)));
+	int Int = (int)round(Number * Multiplier);
+	snprintf(Buf, BufSize, "%d/%d", Int, Multiplier);
 }
 
 /* Converts a floating point number with known significant decimal places
