@@ -410,7 +410,7 @@ int main(int argc, char** argv)
 		} /* End switch(c) */
 	} /* End While(1) */
 	
-	/* Check to see if the user passed some files work with. Not much
+	/* Check to see if the user passed some files to work with. Not much
 	 * good if they didn't. */
 	if (optind < argc)
 	{

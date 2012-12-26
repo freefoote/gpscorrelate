@@ -214,9 +214,6 @@ static void GetTrackRange(struct GPSTrack* Track)
 	Track->MinTime = Track->Points->Time;
 	for (Fill = Track->Points; Fill; Fill = Fill->Next)
 	{
-		/* Ignore trackseg markers... */
-		if (Fill->Lat == 1000 && Fill->Long == 1000)
-			continue;
 		/* Check the Min time */
 		if (Fill->Time < Track->MinTime)
 			Track->MinTime = Fill->Time;
