@@ -94,6 +94,23 @@ static void PrintUsage(const char* ProgramName)
 	puts(  _("-V, --version            Display version information"));
 }
 
+/* CSV escape a string by doubling quotation marks.
+ * A pointer to a malloced string is returned which must be freed by the caller.
+ */
+static char *CsvEscape(const char *str)
+{
+	char *newstr = (char*)malloc(strlen(str)*2+1); // worst-case size
+	char *cpy = newstr;
+	if (!newstr)
+		return newstr;
+	do {
+		*cpy = *str;
+		if (*cpy++ == '"')
+			*cpy++ = '"';
+	} while (*str++);
+	return newstr;
+}
+
 /* Display the information from an existing file. */
 static int ShowFileDetails(const char* File, int MachineReadable)
 {
@@ -118,8 +135,14 @@ static int ShowFileDetails(const char* File, int MachineReadable)
 			 * it machine readable. */
 			if (MachineReadable)
 			{
+				char *EscapedFile = CsvEscape(File);
+				if (!EscapedFile) {
+					printf(_("Out of memory\n"));
+					exit(EXIT_FAILURE);
+				}
 				printf("\"%s\",\"%s\",%f,%f,%.3f\n",
-					File, Time, Lat, Long, Elev);
+					EscapedFile, Time, Lat, Long, Elev);
+				free(EscapedFile);
 			} else {
 				printf(_("%s: %s, Lat %f, Long %f, Elevation %.3f.\n"),
 					File, Time, Lat, Long, Elev);
