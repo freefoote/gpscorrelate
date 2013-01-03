@@ -399,10 +399,10 @@ static void ConvertToRational(double Number, int Decimals, char *Buf, int BufSiz
 	// one more digit to represent than the exponent (e.g. 10^3 = 1000
 	// takes four digits to represent, not the 3 from the exponent).
 	// Cap it at 10^9 to avoid overflow in the EXIF rational data type.
-	int IntDecimals = ceil(log10(Number + 1.0));
-	int Multiplier = powl(10, MAX(0, MIN(Decimals, 9 - IntDecimals)));
+	double IntDecimals = ceil(log10(Number + 1.0));
+	double Multiplier = pow(10, MAX(0, MIN(Decimals, 9 - IntDecimals)));
 	int Int = (int)round(Number * Multiplier);
-	snprintf(Buf, BufSize, "%d/%d", Int, Multiplier);
+	snprintf(Buf, BufSize, "%d/%d", Int, (int)Multiplier);
 }
 
 /* Converts a floating point number with known significant decimal places
@@ -421,10 +421,10 @@ static void ConvertToLatLongRational(double Number, int Decimals, char *Buf, int
 	// figures by 3.6 (log10(60*60)), so round it down to 3 in order to
 	// preserve the maximum precision.  Cap it at 7 to avoid overflow
 	// in the EXIF rational data type.
-	int Multiplier = powl(10, MAX(0, MIN(Decimals - 3, 7)));
-	Sec = (int)floor(FracPart * 60 * Multiplier); // Convert to seconds.
-	snprintf(Buf, BufSize, "%d/1 %d/1 %d/%d", Deg, Min, Sec, Multiplier);
-	//printf("New style lat/long: %f -> %d/%d/ %d/%d\n", Number, Deg, Min, Sec, Multiplier);
+	double Multiplier = pow(10, MAX(0, MIN(Decimals - 3, 7)));
+	Sec = (int)round(FracPart * 60 * Multiplier); // Convert to seconds.
+	snprintf(Buf, BufSize, "%d/1 %d/1 %d/%d", Deg, Min, Sec, (int)Multiplier);
+	//printf("New style lat/long: %f -> %d/%d/ %d/%d\n", Number, Deg, Min, Sec, (int)Multiplier);
 }
 
 /* Converts a floating point number into a string representation of a set of
