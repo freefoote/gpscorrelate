@@ -35,7 +35,15 @@
 /* Some systems have a version of this called timegm(), but it's not portable */
 static time_t portable_timegm(struct tm *tm)
 {
-	const char *tz = getenv("TZ");
+	static const char *tz;
+
+        if (!tz) {
+		tz = getenv("TZ");
+		if (tz)
+			/* Copy the string, since it's only guaranteed to be
+			 * valid until the next getenv or setenv */
+			tz = strdup(tz);
+	}
 
 	/* Set an empty TZ to force UTC */
 	setenv("TZ", "", 1);
