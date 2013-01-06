@@ -201,15 +201,17 @@ void SaveSettings(void)
 	FILE* OutputFile;
 
 	OutputFile = fopen(SettingsFilename, "w");
+	if (OutputFile)
+	{
+		gsize SettingsLength = 0;
+		gchar* SettingsString = g_key_file_to_data(GUISettings, &SettingsLength, NULL);
 
-	gsize SettingsLength = 0;
-	gchar* SettingsString = g_key_file_to_data(GUISettings, &SettingsLength, NULL);
+		fwrite((void*)SettingsString, sizeof(gchar), (size_t)SettingsLength, OutputFile);
 
-	fwrite((void*)SettingsString, sizeof(gchar), (size_t)SettingsLength, OutputFile);
+		fclose(OutputFile);
 
-	fclose(OutputFile);
-
-	g_free(SettingsString);
+		g_free(SettingsString);
+	}
 	free(SettingsFilename);
 }
 
