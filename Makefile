@@ -70,3 +70,14 @@ gpscorrelate.1: doc/gpscorrelate-manpage.xml
 
 gpscorrelate.html: doc/gpscorrelate-manpage.xml
 	xsltproc $(XSLTFLAGS) http://docbook.sourceforge.net/release/xsl/current/html/docbook.xsl $< > $@
+
+dist:
+	mkdir gpscorrelate-$(PACKAGE_VERSION)
+	git archive --prefix=gpscorrelate-$(PACKAGE_VERSION)/ HEAD | tar xf -
+	-rm gpscorrelate-$(PACKAGE_VERSION)/po/stamp-po
+	cd gpscorrelate-$(PACKAGE_VERSION)/po && $(MAKE) gpscorrelate.pot-update clean
+	-rm gpscorrelate-$(PACKAGE_VERSION)/po/stamp-po
+	tar cf gpscorrelate-$(PACKAGE_VERSION).tar gpscorrelate-$(PACKAGE_VERSION)
+	-rm gpscorrelate-$(PACKAGE_VERSION).tar.gz
+	gzip -9 gpscorrelate-$(PACKAGE_VERSION).tar
+	rm -r gpscorrelate-$(PACKAGE_VERSION)
