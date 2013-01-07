@@ -123,8 +123,7 @@ static int ShowFileDetails(const char* File, int MachineReadable)
 
 	if (MachineReadable)
 	{
-		OldLocale = strdup(setlocale(LC_NUMERIC, NULL));
-		setlocale(LC_NUMERIC, "C");
+		OldLocale = setlocale(LC_NUMERIC, "C");
 	}
 
 	if (Time)
@@ -170,7 +169,6 @@ static int ShowFileDetails(const char* File, int MachineReadable)
 
 	if (MachineReadable) {
 		setlocale(LC_NUMERIC, OldLocale);
-		free(OldLocale);
 	}
 
 	return rc;

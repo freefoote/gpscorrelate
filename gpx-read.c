@@ -292,13 +292,11 @@ int ReadGPX(const char* File, struct GPSTrack* Track)
 	FirstPoint = NULL;
 	LastPoint = NULL;
 	
-	char* OldLocale = strdup(setlocale(LC_NUMERIC, NULL));
-	setlocale(LC_NUMERIC, "C");
+	char* OldLocale = setlocale(LC_NUMERIC, "C");
 	
 	FindTrackSeg(GPXRoot);
 
 	setlocale(LC_NUMERIC, OldLocale);
-	free(OldLocale);
 
 	/* Clean up stuff for the XML library. */
 	xmlFreeDoc(GPXData);
