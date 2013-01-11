@@ -25,18 +25,3 @@
  */
 
 GtkWidget* CreateMatchWindow(void);
-gboolean DestroyWindow(GtkWidget *Widget, GdkEvent *Event, gpointer Data);
-
-void AddPhotosButtonPress(GtkWidget *Widget, gpointer Data);
-void AddPhotoToList(const char* Filename);
-void RemovePhotosButtonPress( GtkWidget *Widget, gpointer Data );
-
-void SetListItem(GtkTreeIter* Iter, const char* Filename, const char* Time, double Lat,
-		 double Long, double Elev, const char* PassedState, int IncludesGPS);
-void SetState(GtkTreeIter* Iter, const char* State);
-
-void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data );
-void CorrelateButtonPress( GtkWidget *Widget, gpointer Data );
-void StripGPSButtonPress( GtkWidget *Widget, gpointer Data );
-
-void GtkGUIUpdate(void);

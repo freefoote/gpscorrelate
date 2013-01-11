@@ -159,6 +159,22 @@ char* SettingsFilename;
 gchar* GPXOpenDir = NULL;
 gchar* PhotoOpenDir = NULL;
 
+static gboolean DestroyWindow(GtkWidget *Widget, GdkEvent *Event, gpointer Data);
+
+static void AddPhotosButtonPress(GtkWidget *Widget, gpointer Data);
+static void AddPhotoToList(const char* Filename);
+static void RemovePhotosButtonPress( GtkWidget *Widget, gpointer Data );
+
+static void SetListItem(GtkTreeIter* Iter, const char* Filename,
+			const char* Time, double Lat, double Long, double Elev,
+			const char* PassedState, int IncludesGPS);
+
+static void SelectGPSButtonPress( GtkWidget *Widget, gpointer Data );
+static void CorrelateButtonPress( GtkWidget *Widget, gpointer Data );
+static void StripGPSButtonPress( GtkWidget *Widget, gpointer Data );
+
+static void GtkGUIUpdate(void);
+
 /* Load settings, insert defaults. */
 void LoadSettings(void)
 {
@@ -675,7 +691,7 @@ void AddPhotosButtonPress( GtkWidget *Widget, gpointer Data )
 		GSList* Run;
 		for (Run = FileNames; Run; Run = Run->next)
 		{
-			/* Show whats happening on the screen. */
+			/* Show what's happening on the screen. */
 			GtkGUIUpdate();
 			/*printf("Filename: %s.\n", (char*)Run->data);*/
 			/* Call the other function with the filename - this
