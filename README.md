@@ -4,11 +4,9 @@ Daniel Foote, 2005.
 
 ## Status
 
-Abandoned. I no longer has the time to work on this and hasn't used it in many years. It's being uploaded to github so others can fork it and make their own modifications - as I get emails every few months asking for new features.
-
-*UPDATE (August 2012)* Dan Fandrich <dan@coneharvesters.com> has
-volunteered to take over maintenance of GPSCorrelate. Watch this space
-for updates.
+*UPDATE* Dan Fandrich has taken over maintenance of GPSCorrelate.  Visit the
+new [home page](https://dfandrich.github.io/gpscorrelate/) and [Github
+repo](https://github.com/dfandrich/gpscorrelate/).
 
 ## What is it?
 
